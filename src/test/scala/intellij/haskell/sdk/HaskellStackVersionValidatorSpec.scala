@@ -1,7 +1,10 @@
 package intellij.haskell.sdk
 
+import org.junit.runner.RunWith
 import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatestplus.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class HaskellStackVersionValidatorSpec extends AnyFlatSpec {
 
   import intellij.haskell.sdk.HaskellStackVersionValidator.validate

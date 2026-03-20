@@ -1,9 +1,12 @@
 package intellij.haskell.external.component
 
 import intellij.haskell.external.component.HLintRefactoringsParser._
+import org.junit.runner.RunWith
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class HLintRefactoringsParserSpec extends AnyFlatSpec with Matchers {
 
   val delete = "[Delete {rtype = Import, pos = SrcSpan {startLine = 5, startCol = 1, endLine = 5, endCol = 14}}]"

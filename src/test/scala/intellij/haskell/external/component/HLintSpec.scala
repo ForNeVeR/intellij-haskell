@@ -16,10 +16,13 @@
 
 package intellij.haskell.external.component
 
+import org.junit.runner.RunWith
 import org.scalatest.GivenWhenThen
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class HLintSpec extends AnyFunSpec with Matchers with GivenWhenThen {
 
   describe("HLint component") {

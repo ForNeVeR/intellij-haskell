@@ -1,9 +1,8 @@
-idea-flex.skeleton
-target/
+# Build System
+/.bsp/
+/.gradle/
+/.intellijPlatform/
+/build/
+
+# IDE
 .idea/
-idea/
-*~
-out/
-project/project/
-jflex-*.jar
-/.bsp/sbt.json
