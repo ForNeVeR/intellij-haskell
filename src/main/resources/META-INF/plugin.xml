@@ -11,12 +11,6 @@
             <li>It can create new Stack projects and import existing Stack projects.</li>
             <li>Please <a href="https://github.com/rikvdkleij/intellij-haskell/blob/master/README.md">README</a></li>
         </ul>
-
-        <p>
-            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=H6QKQKFRKJBF2&item_name=IntelliJ-Haskell&currency_code=EUR">
-                <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">
-            </a>
-        </p>
     ]]></description>
 
     <change-notes><![CDATA[
