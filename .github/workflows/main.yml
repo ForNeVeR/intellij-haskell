@@ -22,3 +22,11 @@ jobs:
       run: ./gradlew buildPlugin
     - name: Run tests
       run: ./gradlew test
+
+  licenses:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the sources
+        uses: actions/checkout@v6
+      - name: REUSE license check
+        uses: fsfe/reuse-action@v6
