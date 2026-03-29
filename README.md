@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2014-2022 Rik van der Kleij
+SPDX-FileCopyrightText: 2014-2022 intellij-haskell contributors <https://github.com/rikvdkleij/intellij-haskell>
+SPDX-FileCopyrightText: 2026 haskeletor contributors <https://github.com/ForNeVeR/haskeletor>
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # ![logo](logo/icon_intellij_haskell_32.png) IntelliJ plugin for Haskell
 
 # [![Join the chat at https://gitter.im/intellij-haskell/Lobby](https://badges.gitter.im/intellij-haskell/Lobby.svg)](https://gitter.im/intellij-haskell/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) ![Build](https://github.com/rikvdkleij/intellij-haskell/actions/workflows/scala.yml/badge.svg)
