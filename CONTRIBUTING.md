@@ -55,6 +55,7 @@ Development remarks
 
 License Automation
 ------------------
+<!-- REUSE-IgnoreStart -->
 If the CI asks you to update the file licenses, follow one of these:
 1. Update the headers manually (look at the existing files), something like this:
    ```csharp
@@ -69,5 +70,6 @@ If the CI asks you to update the file licenses, follow one of these:
    ```
 
 (Feel free to attribute the changes to "haskeletor contributors <https://github.com/ForNeVeR/haskeletor>" instead of your name in a multi-author file, or if you don't want your name to be mentioned in the project's source: this doesn't mean you'll lose the copyright.)
+<!-- REUSE-IgnoreEnd -->
 
 [reuse]: https://reuse.software/

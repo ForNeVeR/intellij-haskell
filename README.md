@@ -103,5 +103,21 @@ The project is distributed under the terms of [the Apache 2.0 license][docs.lice
 
 The license indication in the project's sources is compliant with the [REUSE specification v3.3][reuse.spec].
 
-[docs.license]: LICENSE
+<!-- REUSE-IgnoreStart -->
+<!-- Prepared with help of the PowerShell script:
+  $licenses = pipx run reuse lint --json | ConvertFrom-Json
+  $licenses.files | % { $_.copyrights.value } | Select-Object -Unique -->
+
+Copyright holders:
+
+- 2000-2015 JetBrains s.r.o.
+- 2012-2014 Sergey Ignatov
+- 2014-2022 intellij-haskell contributors <https://github.com/rikvdkleij/intellij-haskell>
+- 2014-2022 Rik van der Kleij
+- 2024-2026 Friedrich von Never <friedrich@fornever.me>
+- 2026 haskeletor contributors <https://github.com/ForNeVeR/haskeletor>
+
+<!-- REUSE-IgnoreEnd -->
+
+[docs.license]: LICENSE.txt
 [reuse.spec]: https://reuse.software/spec-3.3/
