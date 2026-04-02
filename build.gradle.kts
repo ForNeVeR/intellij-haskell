@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 
 plugins {
     id("scala")
@@ -65,6 +66,11 @@ intellijPlatform {
 }
 
 tasks {
+    named<PrepareSandboxTask>("prepareSandbox") {
+        from(listOf("README.md", "LICENSE.txt")) {
+            into(pluginName)
+        }
+    }
     withType<ScalaCompile> {
         scalaCompileOptions.additionalParameters = listOf(
             "-target:jvm-17", "-deprecation", "-feature", "-unchecked"
