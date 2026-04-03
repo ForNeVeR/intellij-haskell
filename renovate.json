@@ -5,7 +5,7 @@
     ],
     "automerge": true,
     "automergeType": "branch",
-    "customRules": [
+    "customManagers": [
         {
             "description": "Update the F# script packages.",
             "customType": "regex",
