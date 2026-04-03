@@ -33,6 +33,15 @@ jobs:
     - name: Run tests
       run: ./gradlew test
 
+  encoding:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the sources
+        uses: actions/checkout@v4
+      - name: Verify encoding
+        shell: pwsh
+        run: Install-Module VerifyEncoding -Repository PSGallery -RequiredVersion 2.3.0 -Force && Test-Encoding
+
   licenses:
     runs-on: ubuntu-24.04
     steps:
