@@ -5,11 +5,11 @@
 
 package intellij.haskell.alex.highlighting
 
-import java.util
-
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.options.colors.{AttributesDescriptor, ColorDescriptor, ColorSettingsPage}
 import icons.HaskellIcons
+
+import java.util
 import javax.swing._
 
 /**
@@ -59,7 +59,7 @@ class AlexColorSettingsPage extends ColorSettingsPage {
       |{
       |haskell code
       |}
-      |""".stripMargin
+      |""".stripMargin.replaceAll("\r\n", "\n")
   }
 
   override def getAdditionalHighlightingTagToDescriptorMap: util.Map[String, TextAttributesKey] = null

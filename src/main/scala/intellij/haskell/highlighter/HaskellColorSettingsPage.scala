@@ -10,9 +10,9 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.{AttributesDescriptor, ColorDescriptor, ColorSettingsPage}
 import icons.HaskellIcons
 import intellij.haskell.highlighter.HaskellSyntaxHighlighter._
-import javax.swing._
 import org.jetbrains.annotations.NotNull
 
+import javax.swing._
 import scala.jdk.CollectionConverters._
 
 object HaskellColorSettingsPage {
@@ -86,7 +86,7 @@ class HaskellColorSettingsPage extends ColorSettingsPage {
       |let l2 = 1 : []
       |let two = 1 + 1
       |let f = \_ + 1
-      |[t|select * from foo|]""".stripMargin
+      |[t|select * from foo|]""".stripMargin.replaceAll("\r\n", "\n")
   }
 
   @NotNull
