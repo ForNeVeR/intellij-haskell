@@ -8,11 +8,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # ![logo](logo/icon_intellij_haskell_32.png) IntelliJ plugin for Haskell
 
-# [![Join the chat at https://gitter.im/intellij-haskell/Lobby](https://badges.gitter.im/intellij-haskell/Lobby.svg)](https://gitter.im/intellij-haskell/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) ![Build](https://github.com/rikvdkleij/intellij-haskell/actions/workflows/scala.yml/badge.svg)
-
 When I was learning Haskell, I missed the nice features of IntelliJ IDEA. My first approach
 was to use the default way of creating an IntelliJ plugin by defining a grammar and a lexer according to
-[Haskell report](http://www.haskell.org/onlinereport/haskell2010/haskellch10.html). That didn't work out because I could not define all the recursion. 
+[Haskell report](http://www.haskell.org/onlinereport/haskell2010/haskellch10.html). That didn't work out because I could not define all the recursion.
 Then I decided to use grammar and lexer definitions only for tokenizing and parsing Haskell code, and not for syntax checking the code. This is needed for syntax highlighting, all kinds of navigation, and so on.
 Further Haskell language support is provided with the help of external tools.
 
@@ -28,7 +26,7 @@ You can install this plugin using the [Jetbrains plugin repository](https://plug
 
 # Installing the latest beta of the plugin
 To try out the latest beta version one can install the plugin by adding `https://plugins.jetbrains.com/plugins/alpha/8258` as a custom plugin repository in `Settings`/`Plugins`/`Browse repositories`/`Manage repositories`.
- 
+
 An alternative way to install the latest beta version is to download `IntelliJ-haskell.zip` from [releases](https://github.com/rikvdkleij/intellij-haskell/releases) and apply `Install plugin from disk` in `Settings`/`Plugins`.
 
 
@@ -71,7 +69,7 @@ An alternative way to install the latest beta version is to download `IntelliJ-h
   - Make sure your Stack project builds without errors. Preferably by using: `stack build --test --haddock --no-haddock-hyperlink-source`;
   - After your project is built successfully, import an existing project by:
     - Inside IntelliJ use `File`>`New`>`Project from Existing Sources...` from the IntelliJ menu;
-    - In the `Welcome to IntelliJ IDEA` dialog use `Open or Import Project`; 
+    - In the `Welcome to IntelliJ IDEA` dialog use `Open or Import Project`;
   - In the `New Project` wizard select `Import project from external model` and check `Haskell Stack`;
   - On the next page of wizard configure `Project SDK` by configuring `Haskell Tool Stack` by selecting a path to `stack` binary, e.g. `/usr/local/bin/stack` (you can use `which stack` on Linux or macOS or `where stack` on windows to find the path);
   - Finish wizard and project will be opened;
@@ -80,8 +78,8 @@ An alternative way to install the latest beta version is to download `IntelliJ-h
   - Check `Project structure`>`Project settings`>`Modules` which folders to exclude (like `.stack-work` and `dist`) and which folders are `Source` and `Test` (normally `src` and `test`);
   - Plugin will automatically download library sources. They will be added as source libraries to module(s).
   - After changing the Cabal file and/or `stack.yaml` use `Haskell`>`Haskell`>`Update Settings and Restart REPLs` to download missing library sources and update the project settings;
-  - The `Event Log` will display what's going on in the background. Useful when something fails. It's disabled by default. 
-    It can be enabled by checking the `Haskell Log` checkbox in the `Event Log`>`Settings` or `Settings`>`Appearance & Behavior`>`Notifications`;    
+  - The `Event Log` will display what's going on in the background. Useful when something fails. It's disabled by default.
+    It can be enabled by checking the `Haskell Log` checkbox in the `Event Log`>`Settings` or `Settings`>`Appearance & Behavior`>`Notifications`;
 
 
 # Remarks
