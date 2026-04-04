@@ -38,6 +38,8 @@ import java.util.concurrent.ConcurrentHashMap
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 
+import me.fornever.haskeletor.psi.HaskellPsiExtensions._
+
 class HaskellAnnotator extends ExternalAnnotator[PsiFile, CompilationResult] {
 
   override def collectInformation(psiFile: PsiFile, editor: Editor, hasErrors: Boolean): PsiFile = {

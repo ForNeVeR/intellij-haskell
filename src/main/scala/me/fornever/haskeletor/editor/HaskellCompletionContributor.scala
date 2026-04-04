@@ -31,6 +31,8 @@ import org.apache.commons.lang.StringEscapeUtils
 import scala.jdk.CollectionConverters._
 import scala.util.matching.Regex
 
+import me.fornever.haskeletor.psi.HaskellPsiExtensions._
+
 class HaskellCompletionContributor extends CompletionContributor {
 
   private final val HaskellWhere = LazyList("where")
