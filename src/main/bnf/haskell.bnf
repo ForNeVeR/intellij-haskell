@@ -8,56 +8,56 @@
 
 // Originally derived from http://www.haskell.org/onlinereport/haskell2010/haskellch10.html
 {
-  parserClass="intellij.haskell.parser.HaskellParser"
-  parserUtilClass="intellij.haskell.psi.HaskellParserUtil"
+  parserClass="me.fornever.haskeletor.parser.HaskellParser"
+  parserUtilClass="me.fornever.haskeletor.psi.HaskellParserUtil"
 
-  implements="intellij.haskell.psi.HaskellCompositeElement"
-  extends="intellij.haskell.psi.impl.HaskellCompositeElementImpl"
+  implements="me.fornever.haskeletor.psi.HaskellCompositeElement"
+  extends="me.fornever.haskeletor.psi.impl.HaskellCompositeElementImpl"
 
   psiClassPrefix="Haskell"
   psiImplClassSuffix="Impl"
-  psiPackage="intellij.haskell.psi"
-  psiImplPackage="intellij.haskell.psi.impl"
+  psiPackage="me.fornever.haskeletor.psi"
+  psiImplPackage="me.fornever.haskeletor.psi.impl"
 
-  elementTypeHolderClass="intellij.haskell.psi.HaskellTypes"
-  elementTypeClass="intellij.haskell.psi.HaskellCompositeElementType"
-  tokenTypeClass="intellij.haskell.psi.HaskellTokenType"
+  elementTypeHolderClass="me.fornever.haskeletor.psi.HaskellTypes"
+  elementTypeClass="me.fornever.haskeletor.psi.HaskellCompositeElementType"
+  tokenTypeClass="me.fornever.haskeletor.psi.HaskellTokenType"
 
-  psiImplUtilClass="intellij.haskell.psi.impl.HaskellPsiImplUtil"
+  psiImplUtilClass="me.fornever.haskeletor.psi.impl.HaskellPsiImplUtil"
 
   elementTypePrefix="HS_"
 
   methods("varid|varsym|conid|consym|modid")=[getName setName getNameIdentifier getReference getPresentation]
-  extends("varid|varsym|conid|consym|modid")="intellij.haskell.psi.impl.HaskellNamedStubBasedPsiElementBase<?>"
-  implements("varid|varsym|conid|consym|modid")="intellij.haskell.psi.HaskellNamedElement"
-  elementTypeFactory("varid|varsym|conid|consym|modid")="intellij.haskell.psi.impl.HaskellElementTypeFactory.factory"
+  extends("varid|varsym|conid|consym|modid")="me.fornever.haskeletor.psi.impl.HaskellNamedStubBasedPsiElementBase<?>"
+  implements("varid|varsym|conid|consym|modid")="me.fornever.haskeletor.psi.HaskellNamedElement"
+  elementTypeFactory("varid|varsym|conid|consym|modid")="me.fornever.haskeletor.psi.impl.HaskellElementTypeFactory.factory"
 
   methods("type_signature|type_declaration|class_declaration|instance_declaration|type_family_declaration|deriving_declaration|type_instance_declaration")=[getName getPresentation getIdentifierElements getModuleName]
   methods("default_declaration|foreign_declaration|module_declaration")=[getName getPresentation getIdentifierElements getModuleName]
-  implements("type_signature|type_declaration|class_declaration|instance_declaration|type_family_declaration|deriving_declaration|type_instance_declaration|default_declaration")="intellij.haskell.psi.HaskellDeclarationElement"
-  implements("default_declaration|foreign_declaration|module_declaration")="intellij.haskell.psi.HaskellDeclarationElement"
+  implements("type_signature|type_declaration|class_declaration|instance_declaration|type_family_declaration|deriving_declaration|type_instance_declaration|default_declaration")="me.fornever.haskeletor.psi.HaskellDeclarationElement"
+  implements("default_declaration|foreign_declaration|module_declaration")="me.fornever.haskeletor.psi.HaskellDeclarationElement"
 
   methods("data_declaration|newtype_declaration")=[getName getPresentation getIdentifierElements getModuleName getDataTypeConstructor]
-  implements("data_declaration|newtype_declaration")="intellij.haskell.psi.HaskellDataConstructorDeclarationElement"
+  implements("data_declaration|newtype_declaration")="me.fornever.haskeletor.psi.HaskellDataConstructorDeclarationElement"
 
   methods("var_con|q_var_con")=[getName getIdentifierElement]
 
   methods("q_name")=[getName getIdentifierElement getQualifierName]
-  implements("q_name")="intellij.haskell.psi.HaskellQualifiedNameElement"
+  implements("q_name")="me.fornever.haskeletor.psi.HaskellQualifiedNameElement"
 
-  implements("expression")="intellij.haskell.psi.HaskellExpressionElement"
-  mixin("expression")="intellij.haskell.psi.impl.HaskellExpressionElementImpl"
+  implements("expression")="me.fornever.haskeletor.psi.HaskellExpressionElement"
+  mixin("expression")="me.fornever.haskeletor.psi.impl.HaskellExpressionElementImpl"
 
   methods("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")=[getName setName getNameIdentifier getReference getPresentation]
-  implements("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")="intellij.haskell.psi.HaskellQualifierElement"
-  mixin("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")="intellij.haskell.psi.impl.HaskellQualifierElementImpl"
-  implements("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")="intellij.haskell.psi.HaskellNamedElement"
+  implements("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")="me.fornever.haskeletor.psi.HaskellQualifierElement"
+  mixin("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")="me.fornever.haskeletor.psi.impl.HaskellQualifierElementImpl"
+  implements("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")="me.fornever.haskeletor.psi.HaskellNamedElement"
 
-  implements("text_literal")=["intellij.haskell.psi.HaskellStringLiteralElement" "com.intellij.psi.PsiLanguageInjectionHost"]
-  mixin("text_literal")="intellij.haskell.psi.impl.HaskellStringLiteralElementImpl"
+  implements("text_literal")=["me.fornever.haskeletor.psi.HaskellStringLiteralElement" "com.intellij.psi.PsiLanguageInjectionHost"]
+  mixin("text_literal")="me.fornever.haskeletor.psi.impl.HaskellStringLiteralElementImpl"
 
-  implements("quasi_quote")=["intellij.haskell.psi.HaskellQuasiQuoteElement" "com.intellij.psi.PsiLanguageInjectionHost"]
-  mixin("quasi_quote")="intellij.haskell.psi.impl.HaskellQuasiQuoteElementImpl"
+  implements("quasi_quote")=["me.fornever.haskeletor.psi.HaskellQuasiQuoteElement" "com.intellij.psi.PsiLanguageInjectionHost"]
+  mixin("quasi_quote")="me.fornever.haskeletor.psi.impl.HaskellQuasiQuoteElementImpl"
 }
 
 program                     ::= NEWLINE* shebang_line? NEWLINE* file_header NEWLINE* module_body?
@@ -148,12 +148,12 @@ private oonls               ::= (&<<containsSpaces>> NEWLINE | (DIRECTIVE | INCL
 
 comments                    ::= COMMENT | NCOMMENT | HADDOCK | NHADDOCK | NOT_TERMINATED_COMMENT // rule is necessary to refer to various comment types in code
 
-modid                       ::= (conid DOT)* conid {pin=1 stubClass = "intellij.haskell.psi.stubs.HaskellModidStub"}
+modid                       ::= (conid DOT)* conid {pin=1 stubClass = "me.fornever.haskeletor.psi.stubs.HaskellModidStub"}
 
-varid                       ::= VAR_ID  {stubClass = "intellij.haskell.psi.stubs.HaskellVaridStub"}
-conid                       ::= CON_ID  {stubClass = "intellij.haskell.psi.stubs.HaskellConidStub"}
-varsym                      ::= VARSYM_ID | DOT+ VARSYM_ID | DOT+ EQUAL | DOT+ BACKSLASH | DOT+ TILDE | DOT+ AT | DOT+ CONSYM_ID | DOT+ VERTICAL_BAR | DOT DOT DOT+ | DOT     {stubClass = "intellij.haskell.psi.stubs.HaskellVarsymStub"}
-consym                      ::= CONSYM_ID   {stubClass = "intellij.haskell.psi.stubs.HaskellConsymStub"}
+varid                       ::= VAR_ID  {stubClass = "me.fornever.haskeletor.psi.stubs.HaskellVaridStub"}
+conid                       ::= CON_ID  {stubClass = "me.fornever.haskeletor.psi.stubs.HaskellConidStub"}
+varsym                      ::= VARSYM_ID | DOT+ VARSYM_ID | DOT+ EQUAL | DOT+ BACKSLASH | DOT+ TILDE | DOT+ AT | DOT+ CONSYM_ID | DOT+ VERTICAL_BAR | DOT DOT DOT+ | DOT     {stubClass = "me.fornever.haskeletor.psi.stubs.HaskellVarsymStub"}
+consym                      ::= CONSYM_ID   {stubClass = "me.fornever.haskeletor.psi.stubs.HaskellConsymStub"}
 
 var_con                     ::= varid | consym | varsym | conid
 q_var_con                   ::= &<<noSpaceAfterQualifier>> qualifier DOT (varid | consym | varsym) | q_con
