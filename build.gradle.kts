@@ -51,14 +51,17 @@ dependencies {
     }
 }
 
-val generatedLexerBase = layout.buildDirectory.dir("generated/lexer")
+val generatedHaskellLexerSourceBase = layout.buildDirectory.dir("generated/lexer/haskell")
+val generatedHaskellParserSourceBase = layout.buildDirectory.dir("generated/parser/haskell")
+
 sourceSets {
     main {
         scala {
             srcDirs(
                 "gen",
                 "src/main/scala",
-                generatedLexerBase
+                generatedHaskellLexerSourceBase,
+                generatedHaskellParserSourceBase
             )
         }
     }
@@ -78,11 +81,18 @@ intellijPlatform {
 tasks {
     generateLexer {
         sourceFile = file("src/main/flex/_HaskellLexer.flex")
-        targetOutputDir = generatedLexerBase.map { it.dir("me/fornever/haskeletor") }
+        targetOutputDir = generatedHaskellLexerSourceBase.map { it.dir("me/fornever/haskeletor") }
         purgeOldFiles = true
     }
+    generateParser {
+        sourceFile = file("src/main/bnf/haskell.bnf")
+        targetRootOutputDir = generatedHaskellParserSourceBase
+        purgeOldFiles = true
+        pathToParser = "me/fornever/haskeletor/HaskellParser"
+        pathToPsiRoot = "me/fornever/haskeletor/psi"
+    }
     withType<ScalaCompile> {
-        dependsOn(generateLexer)
+        dependsOn(generateLexer, generateParser)
         scalaCompileOptions.additionalParameters = listOf(
             "-deprecation", "-feature", "-unchecked"
         )
