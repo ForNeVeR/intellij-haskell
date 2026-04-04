@@ -26,6 +26,8 @@ import me.fornever.haskeletor.util.{ApplicationUtil, GhcVersion, HaskellProjectU
 
 import scala.concurrent._
 
+import me.fornever.haskeletor.psi.HaskellPsiExtensions._
+
 object HaskellComponentsManager {
 
   case class ComponentTarget(module: Module, modulePath: String, packageName: String, target: String, stanzaType: StanzaType, sourceDirs: Seq[String],

@@ -39,6 +39,8 @@ import me.fornever.haskeletor.{GlobalInfo, HTool, HaskellNotificationGroup}
 
 import java.io.File
 
+import me.fornever.haskeletor.psi.HaskellPsiExtensions._
+
 object StackProjectManager {
 
   import me.fornever.haskeletor.util.ScalaUtil._

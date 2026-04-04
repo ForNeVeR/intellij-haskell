@@ -23,6 +23,8 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
 
+import me.fornever.haskeletor.psi.HaskellPsiExtensions._
+
 object FileModuleIdentifiers {
 
   private case class Key(psiFile: PsiFile)

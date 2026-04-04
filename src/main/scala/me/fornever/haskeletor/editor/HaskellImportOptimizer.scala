@@ -23,6 +23,8 @@ import me.fornever.haskeletor.util.{HaskellFileUtil, HaskellProjectUtil, LineCol
 import scala.jdk.CollectionConverters._
 import scala.util.matching.Regex
 
+import me.fornever.haskeletor.psi.HaskellPsiExtensions._
+
 class HaskellImportOptimizer extends ImportOptimizer {
 
   override def supports(psiFile: PsiFile): Boolean = psiFile.isInstanceOf[HaskellFile] && HaskellProjectUtil.isSourceFile(psiFile)

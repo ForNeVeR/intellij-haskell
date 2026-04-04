@@ -20,6 +20,8 @@ import me.fornever.haskeletor.psi._
 import me.fornever.haskeletor.util._
 import me.fornever.haskeletor.util.index.HaskellModuleNameIndex
 
+import me.fornever.haskeletor.psi.HaskellPsiExtensions._
+
 class HaskellReference(element: HaskellNamedElement, textRange: TextRange) extends PsiPolyVariantReferenceBase[HaskellNamedElement](element, textRange) {
 
   private def findModule(project: Project, moduleName: String) = {

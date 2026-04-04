@@ -23,32 +23,28 @@
   elementTypeClass="me.fornever.haskeletor.psi.HaskellCompositeElementType"
   tokenTypeClass="me.fornever.haskeletor.psi.HaskellTokenType"
 
-  psiImplUtilClass="me.fornever.haskeletor.psi.impl.HaskellPsiImplUtil"
+  // NOTE: psiImplUtilClass is not supported by Grammar-Kit Gradle plugin.
+  // Methods previously generated via psiImplUtilClass are now provided by:
+  // - Default implementations in owned traits (HaskellDeclarationElement, HaskellQualifiedNameElement, etc.)
+  // - Implicit extension methods (HaskellPsiExtensions)
+  // - Base class overrides (HaskellNamedStubBasedPsiElementBase, HaskellQualifierElementImpl)
 
   elementTypePrefix="HS_"
 
-  methods("varid|varsym|conid|consym|modid")=[getName setName getNameIdentifier getReference getPresentation]
   extends("varid|varsym|conid|consym|modid")="me.fornever.haskeletor.psi.impl.HaskellNamedStubBasedPsiElementBase<?>"
   implements("varid|varsym|conid|consym|modid")="me.fornever.haskeletor.psi.HaskellNamedElement"
   elementTypeFactory("varid|varsym|conid|consym|modid")="me.fornever.haskeletor.psi.impl.HaskellElementTypeFactory.factory"
 
-  methods("type_signature|type_declaration|class_declaration|instance_declaration|type_family_declaration|deriving_declaration|type_instance_declaration")=[getName getPresentation getIdentifierElements getModuleName]
-  methods("default_declaration|foreign_declaration|module_declaration")=[getName getPresentation getIdentifierElements getModuleName]
   implements("type_signature|type_declaration|class_declaration|instance_declaration|type_family_declaration|deriving_declaration|type_instance_declaration|default_declaration")="me.fornever.haskeletor.psi.HaskellDeclarationElement"
   implements("default_declaration|foreign_declaration|module_declaration")="me.fornever.haskeletor.psi.HaskellDeclarationElement"
 
-  methods("data_declaration|newtype_declaration")=[getName getPresentation getIdentifierElements getModuleName getDataTypeConstructor]
   implements("data_declaration|newtype_declaration")="me.fornever.haskeletor.psi.HaskellDataConstructorDeclarationElement"
 
-  methods("var_con|q_var_con")=[getName getIdentifierElement]
-
-  methods("q_name")=[getName getIdentifierElement getQualifierName]
   implements("q_name")="me.fornever.haskeletor.psi.HaskellQualifiedNameElement"
 
   implements("expression")="me.fornever.haskeletor.psi.HaskellExpressionElement"
   mixin("expression")="me.fornever.haskeletor.psi.impl.HaskellExpressionElementImpl"
 
-  methods("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")=[getName setName getNameIdentifier getReference getPresentation]
   implements("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")="me.fornever.haskeletor.psi.HaskellQualifierElement"
   mixin("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")="me.fornever.haskeletor.psi.impl.HaskellQualifierElementImpl"
   implements("q_con_qualifier1|q_con_qualifier2|q_con_qualifier3|q_con_qualifier4|qualifier")="me.fornever.haskeletor.psi.HaskellNamedElement"
@@ -74,7 +70,7 @@ private body                ::= import_declarations? onl top_declarations onl
 import_declarations         ::= import_declaration (onl import_declaration)* (DIRECTIVE | INCLUDE_DIRECTIVE)*
 private top_declarations    ::= (top_declaration onl)* top_declaration?
 
-import_declaration          ::= IMPORT (onls pragma)? (onls import_qualified)? (onls import_package_name)? onls modid (onls import_qualified_as)? (onls import_spec)? NEWLINE?   {methods=[getModuleName] pin=1}
+import_declaration          ::= IMPORT (onls pragma)? (onls import_qualified)? (onls import_package_name)? onls modid (onls import_qualified_as)? (onls import_spec)? NEWLINE?   {pin=1}
 import_qualified            ::= "qualified"
 import_qualified_as         ::= "as" qualifier
 import_spec                 ::= import_ids_spec |
@@ -200,7 +196,7 @@ private btype               ::= (atype | TILDE | UNDERSCORE)+     // generalizat
 simpletype                  ::= ttype | (q_name | LEFT_PAREN RIGHT_PAREN)+ |
                                   q_name* oonls LEFT_PAREN q_name RIGHT_PAREN oonls q_name* |
                                   q_name oonls q_name* oonls (LEFT_PAREN type_signature RIGHT_PAREN)+ oonls q_name* |
-                                  q_name | LEFT_PAREN RIGHT_PAREN | LEFT_BRACKET RIGHT_BRACKET q_name*    {methods=[getIdentifierElements]}
+                                  q_name | LEFT_PAREN RIGHT_PAREN | LEFT_BRACKET RIGHT_BRACKET q_name*
 
 list_type                   ::= LEFT_BRACKET (COLON_COLON | q_name) RIGHT_BRACKET
 
