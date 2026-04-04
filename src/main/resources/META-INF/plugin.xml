@@ -1,10 +1,11 @@
 <!--
-SPDX-FileCopyrightText: 2014-2022 Rik van der Kleij
-SPDX-FileCopyrightText: 2014-2022 intellij-haskell contributors <https://github.com/rikvdkleij/intellij-haskell>
-SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
-
-SPDX-License-Identifier: Apache-2.0
--->
+  ~ SPDX-FileCopyrightText: 2014-2022 Rik van der Kleij
+  ~ SPDX-FileCopyrightText: 2014-2022 intellij-haskell contributors <https://github.com/rikvdkleij/intellij-haskell>
+  ~ SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+  ~ SPDX-FileCopyrightText: 2026 haskeletor contributors <https://github.com/ForNeVeR/haskeletor>
+  ~
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
 
 <idea-plugin require-restart="true">
     <id>me.fornever.haskeletor</id>
@@ -24,220 +25,220 @@ SPDX-License-Identifier: Apache-2.0
         <!-- File types -->
         <fileType name="Alex"
                   language="Alex"
-                  implementationClass="intellij.haskell.alex.AlexFileType"
+                  implementationClass="me.fornever.haskeletor.alex.AlexFileType"
                   extensions="x"
                   fieldName="INSTANCE"/>
 
         <fileType name="Cabal"
                   language="Cabal"
-                  implementationClass="intellij.haskell.cabal.CabalFileType"
+                  implementationClass="me.fornever.haskeletor.cabal.CabalFileType"
                   extensions="cabal"
                   fieldName="INSTANCE"/>
 
         <fileType name="Haskell"
                   language="Haskell"
-                  implementationClass="intellij.haskell.HaskellFileType"
+                  implementationClass="me.fornever.haskeletor.HaskellFileType"
                   extensions="hs"
                   fieldName="INSTANCE"/>
 
         <!-- Parser -->
-        <lang.parserDefinition language="Haskell" implementationClass="intellij.haskell.HaskellParserDefinition"/>
+        <lang.parserDefinition language="Haskell" implementationClass="me.fornever.haskeletor.HaskellParserDefinition"/>
         <lang.parserDefinition language="Cabal"
-                               implementationClass="intellij.haskell.cabal.lang.parser.CabalParserDefinition"/>
+                               implementationClass="me.fornever.haskeletor.cabal.lang.parser.CabalParserDefinition"/>
         <lang.parserDefinition language="Alex"
-                               implementationClass="intellij.haskell.alex.lang.parser.AlexParserDefinition"/>
+                               implementationClass="me.fornever.haskeletor.alex.lang.parser.AlexParserDefinition"/>
 
         <!-- Syntax Highlighter -->
         <lang.syntaxHighlighterFactory language="Haskell"
-                                       implementationClass="intellij.haskell.highlighter.HaskellSyntaxHighlighterFactory"/>
+                                       implementationClass="me.fornever.haskeletor.highlighter.HaskellSyntaxHighlighterFactory"/>
         <lang.syntaxHighlighterFactory language="Cabal"
-                                       implementationClass="intellij.haskell.cabal.highlighting.CabalSyntaxHighlighterFactory"/>
+                                       implementationClass="me.fornever.haskeletor.cabal.highlighting.CabalSyntaxHighlighterFactory"/>
         <lang.syntaxHighlighterFactory language="Alex"
-                                       implementationClass="intellij.haskell.alex.highlighting.AlexSyntaxHighlighterFactory"/>
+                                       implementationClass="me.fornever.haskeletor.alex.highlighting.AlexSyntaxHighlighterFactory"/>
 
         <!-- Refactoring support -->
         <lang.refactoringSupport language="Haskell"
-                                 implementationClass="intellij.haskell.refactor.HaskellRefactoringSupportProvider"/>
-        <moveFileHandler implementation="intellij.haskell.refactor.HaskellMoveFileHandler"/>
-        <renamePsiElementProcessor implementation="intellij.haskell.refactor.HaskellRenameFileProcessor"/>
-        <renamePsiElementProcessor implementation="intellij.haskell.refactor.HaskellRenameVariableProcessor"/>
-        <renameInputValidator implementation="intellij.haskell.refactor.HaskellRenameInputValidator"/>
-        <lang.elementManipulator forClass="intellij.haskell.psi.HaskellNamedElement"
-                                 implementationClass="intellij.haskell.psi.HaskellNamedElementManipulator"/>
-        <lang.elementManipulator forClass="intellij.haskell.alex.lang.psi.impl.AlexHaskellCodeInjectionHost"
-                                 implementationClass="intellij.haskell.alex.lang.psi.impl.AlexElementManipulator"/>
-        <lang.elementManipulator forClass="intellij.haskell.psi.impl.HaskellStringLiteralElementImpl"
-                                 implementationClass="intellij.haskell.psi.impl.HaskellStringLiteralManipulator"/>
-        <lang.elementManipulator forClass="intellij.haskell.psi.impl.HaskellQuasiQuoteElementImpl"
-                                 implementationClass="intellij.haskell.psi.impl.HaskellQuasiQuoteManipulator"/>
-        <lang.namesValidator language="Haskell" implementationClass="intellij.haskell.refactor.HaskellNamesValidator"/>
-        <languageInjector implementation="intellij.haskell.alex.lang.psi.AlexHaskellInjector"/>
+                                 implementationClass="me.fornever.haskeletor.refactor.HaskellRefactoringSupportProvider"/>
+        <moveFileHandler implementation="me.fornever.haskeletor.refactor.HaskellMoveFileHandler"/>
+        <renamePsiElementProcessor implementation="me.fornever.haskeletor.refactor.HaskellRenameFileProcessor"/>
+        <renamePsiElementProcessor implementation="me.fornever.haskeletor.refactor.HaskellRenameVariableProcessor"/>
+        <renameInputValidator implementation="me.fornever.haskeletor.refactor.HaskellRenameInputValidator"/>
+        <lang.elementManipulator forClass="me.fornever.haskeletor.psi.HaskellNamedElement"
+                                 implementationClass="me.fornever.haskeletor.psi.HaskellNamedElementManipulator"/>
+        <lang.elementManipulator forClass="me.fornever.haskeletor.alex.lang.psi.impl.AlexHaskellCodeInjectionHost"
+                                 implementationClass="me.fornever.haskeletor.alex.lang.psi.impl.AlexElementManipulator"/>
+        <lang.elementManipulator forClass="me.fornever.haskeletor.psi.impl.HaskellStringLiteralElementImpl"
+                                 implementationClass="me.fornever.haskeletor.psi.impl.HaskellStringLiteralManipulator"/>
+        <lang.elementManipulator forClass="me.fornever.haskeletor.psi.impl.HaskellQuasiQuoteElementImpl"
+                                 implementationClass="me.fornever.haskeletor.psi.impl.HaskellQuasiQuoteManipulator"/>
+        <lang.namesValidator language="Haskell" implementationClass="me.fornever.haskeletor.refactor.HaskellNamesValidator"/>
+        <languageInjector implementation="me.fornever.haskeletor.alex.lang.psi.AlexHaskellInjector"/>
 
-        <lang.elementManipulator forClass="intellij.haskell.cabal.lang.psi.CabalNamedElement"
-                                 implementationClass="intellij.haskell.cabal.lang.psi.CabalNamedElementManipulator"/>
+        <lang.elementManipulator forClass="me.fornever.haskeletor.cabal.lang.psi.CabalNamedElement"
+                                 implementationClass="me.fornever.haskeletor.cabal.lang.psi.CabalNamedElementManipulator"/>
 
         <!-- Folding -->
         <lang.foldingBuilder language="Haskell"
-                             implementationClass="intellij.haskell.editor.HaskellFoldingBuilder"/>
-        <applicationService serviceImplementation="intellij.haskell.editor.HaskellFoldingSettings"/>
-        <codeFoldingOptionsProvider instance="intellij.haskell.editor.HaskellCodeFoldingOptionsProvider"/>
+                             implementationClass="me.fornever.haskeletor.editor.HaskellFoldingBuilder"/>
+        <applicationService serviceImplementation="me.fornever.haskeletor.editor.HaskellFoldingSettings"/>
+        <codeFoldingOptionsProvider instance="me.fornever.haskeletor.editor.HaskellCodeFoldingOptionsProvider"/>
 
         <!-- Commenter -->
-        <lang.commenter language="Haskell" implementationClass="intellij.haskell.editor.HaskellCommenter"/>
-        <lang.commenter language="Cabal" implementationClass="intellij.haskell.cabal.CabalCommenter"/>
+        <lang.commenter language="Haskell" implementationClass="me.fornever.haskeletor.editor.HaskellCommenter"/>
+        <lang.commenter language="Cabal" implementationClass="me.fornever.haskeletor.cabal.CabalCommenter"/>
 
         <!-- Matcher -->
         <lang.braceMatcher language="Haskell"
-                           implementationClass="intellij.haskell.highlighter.HaskellBraceMatcher"/>
+                           implementationClass="me.fornever.haskeletor.highlighter.HaskellBraceMatcher"/>
         <lang.braceMatcher language="Alex"
-                           implementationClass="intellij.haskell.alex.lang.AlexBraceMatcher"/>
+                           implementationClass="me.fornever.haskeletor.alex.lang.AlexBraceMatcher"/>
 
         <!-- Doc-Provider -->
         <lang.documentationProvider language="Haskell"
-                                    implementationClass="intellij.haskell.external.component.HaskellDocumentationProvider"/>
+                                    implementationClass="me.fornever.haskeletor.external.component.HaskellDocumentationProvider"/>
 
         <!-- Quick definition -->
         <lang.implementationTextSelectioner language="Haskell"
-                                            implementationClass="intellij.haskell.codeinsight.HaskellImplementationTextSelectioner"/>
+                                            implementationClass="me.fornever.haskeletor.codeinsight.HaskellImplementationTextSelectioner"/>
 
         <!-- Structure View -->
         <lang.psiStructureViewFactory language="Haskell"
-                                      implementationClass="intellij.haskell.navigation.HaskellStructureViewFactory"/>
+                                      implementationClass="me.fornever.haskeletor.navigation.HaskellStructureViewFactory"/>
 
         <!-- Usages Provider -->
         <lang.findUsagesProvider language="Haskell"
-                                 implementationClass="intellij.haskell.navigation.HaskellFindUsagesProvider"/>
+                                 implementationClass="me.fornever.haskeletor.navigation.HaskellFindUsagesProvider"/>
 
         <!-- Navigation -->
-        <gotoClassContributor implementation="intellij.haskell.navigation.GotoByDeclarationContributor"/>
-        <gotoSymbolContributor implementation="intellij.haskell.navigation.GotoByNameContributor"/>
+        <gotoClassContributor implementation="me.fornever.haskeletor.navigation.GotoByDeclarationContributor"/>
+        <gotoSymbolContributor implementation="me.fornever.haskeletor.navigation.GotoByNameContributor"/>
 
         <!-- Test Integration -->
-        <testFinder implementation="intellij.haskell.testIntegration.HaskellTestFinder"/>
-        <testCreator language="Haskell" implementationClass="intellij.haskell.testIntegration.HaskellTestCreator"/>
+        <testFinder implementation="me.fornever.haskeletor.testIntegration.HaskellTestFinder"/>
+        <testCreator language="Haskell" implementationClass="me.fornever.haskeletor.testIntegration.HaskellTestCreator"/>
 
         <!-- Annotator -->
         <externalAnnotator language="Haskell"
-                           implementationClass="intellij.haskell.annotator.HaskellAnnotator"/>
+                           implementationClass="me.fornever.haskeletor.annotator.HaskellAnnotator"/>
         <annotator language="Haskell"
-                   implementationClass="intellij.haskell.highlighter.HaskellHighlightingAnnotator"/>
+                   implementationClass="me.fornever.haskeletor.highlighter.HaskellHighlightingAnnotator"/>
         <annotator language="Cabal"
-                   implementationClass="intellij.haskell.cabal.highlighting.CabalAnnotator"/>
+                   implementationClass="me.fornever.haskeletor.cabal.highlighting.CabalAnnotator"/>
 
         <!-- Completion -->
         <completion.contributor language="Haskell"
-                                implementationClass="intellij.haskell.editor.HaskellCompletionContributor"/>
+                                implementationClass="me.fornever.haskeletor.editor.HaskellCompletionContributor"/>
         <completion.contributor
                 language="Cabal"
-                implementationClass="intellij.haskell.cabal.completion.CabalCompletionContributor"/>
-        <lookup.charFilter implementation="intellij.haskell.editor.HaskellCompletionCharFilter"/>
-        <psi.referenceContributor language="Haskell" implementation="intellij.haskell.psi.HaskellReferenceContributor"/>
-        <liveTemplateContext implementation="intellij.haskell.editor.HaskellTemplateContextType"/>
-        <liveTemplateContext implementation="intellij.haskell.editor.HaskellPragmaTemplateContextType"/>
-        <liveTemplateContext implementation="intellij.haskell.editor.HaskellGlobalDefinitionTemplateContextType"/>
+                implementationClass="me.fornever.haskeletor.cabal.completion.CabalCompletionContributor"/>
+        <lookup.charFilter implementation="me.fornever.haskeletor.editor.HaskellCompletionCharFilter"/>
+        <psi.referenceContributor language="Haskell" implementation="me.fornever.haskeletor.psi.HaskellReferenceContributor"/>
+        <liveTemplateContext implementation="me.fornever.haskeletor.editor.HaskellTemplateContextType"/>
+        <liveTemplateContext implementation="me.fornever.haskeletor.editor.HaskellPragmaTemplateContextType"/>
+        <liveTemplateContext implementation="me.fornever.haskeletor.editor.HaskellGlobalDefinitionTemplateContextType"/>
         <defaultLiveTemplates file="liveTemplates/Haskell"/>
         <!-- Handler -->
-        <typedHandler implementation="intellij.haskell.editor.HaskellTypedHandler" id="HaskellFile"/>
-        <extendWordSelectionHandler implementation="intellij.haskell.editor.HaskellExtendWordSelectionHandler"/>
-        <enterHandlerDelegate implementation="intellij.haskell.editor.EnterInHaddockHandler"
+        <typedHandler implementation="me.fornever.haskeletor.editor.HaskellTypedHandler" id="HaskellFile"/>
+        <extendWordSelectionHandler implementation="me.fornever.haskeletor.editor.HaskellExtendWordSelectionHandler"/>
+        <enterHandlerDelegate implementation="me.fornever.haskeletor.editor.EnterInHaddockHandler"
                               id="EnterInHaddockHandler"/>
-        <enterHandlerDelegate implementation="intellij.haskell.editor.IndentAfterEnterHandler"
+        <enterHandlerDelegate implementation="me.fornever.haskeletor.editor.IndentAfterEnterHandler"
                               id="IndentAfterEnterHandler"/>
 
-        <quoteHandler fileType="Haskell" className="intellij.haskell.editor.HaskellQuoteHandler"/>
+        <quoteHandler fileType="Haskell" className="me.fornever.haskeletor.editor.HaskellQuoteHandler"/>
 
         <!-- Code Style -->
         <codeStyleSettingsProvider
-                implementation="intellij.haskell.editor.formatter.settings.HaskellCodeStyleSettingsProvider"/>
+                implementation="me.fornever.haskeletor.editor.formatter.settings.HaskellCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider
-                implementation="intellij.haskell.editor.formatter.settings.HaskellLanguageCodeStyleSettingsProvider"/>
+                implementation="me.fornever.haskeletor.editor.formatter.settings.HaskellLanguageCodeStyleSettingsProvider"/>
 
         <!-- Color Setting -->
-        <colorSettingsPage implementation="intellij.haskell.highlighter.HaskellColorSettingsPage"/>
-        <colorSettingsPage implementation="intellij.haskell.cabal.highlighting.CabalColorSettingsPage"/>
-        <colorSettingsPage implementation="intellij.haskell.alex.highlighting.AlexColorSettingsPage"/>
+        <colorSettingsPage implementation="me.fornever.haskeletor.highlighter.HaskellColorSettingsPage"/>
+        <colorSettingsPage implementation="me.fornever.haskeletor.cabal.highlighting.CabalColorSettingsPage"/>
+        <colorSettingsPage implementation="me.fornever.haskeletor.alex.highlighting.AlexColorSettingsPage"/>
 
         <!-- Inspection -->
         <localInspection language="Haskell" shortName="HLintInspection"
                          displayName="Inspection by HLint"
                          groupName="Haskell" enabledByDefault="true" level="WARNING"
-                         implementationClass="intellij.haskell.inspection.HLintInspectionTool"/>
+                         implementationClass="me.fornever.haskeletor.inspection.HLintInspectionTool"/>
 
         <!-- Intention -->
         <intentionAction>
-            <className>intellij.haskell.intention.AddParensIntention</className>
+            <className>me.fornever.haskeletor.intention.AddParensIntention</className>
             <category>Haskell</category>
         </intentionAction>
         <intentionAction>
-            <className>intellij.haskell.intention.RemoveParensIntention</className>
+            <className>me.fornever.haskeletor.intention.RemoveParensIntention</className>
             <category>Haskell</category>
         </intentionAction>
         <intentionAction>
-            <className>intellij.haskell.intention.CaseSplitIntention</className>
+            <className>me.fornever.haskeletor.intention.CaseSplitIntention</className>
             <category>Haskell</category>
         </intentionAction>
 
 
         <!-- Stack -->
-        <sdkType implementation="intellij.haskell.sdk.HaskellSdkType"/>
-        <projectImportProvider implementation="intellij.haskell.module.StackProjectImportProvider"/>
-        <projectImportBuilder implementation="intellij.haskell.module.StackProjectImportBuilder"/>
-        <projectOpenProcessor implementation="intellij.haskell.module.StackProjectOpenProcessor"/>
+        <sdkType implementation="me.fornever.haskeletor.sdk.HaskellSdkType"/>
+        <projectImportProvider implementation="me.fornever.haskeletor.module.StackProjectImportProvider"/>
+        <projectImportBuilder implementation="me.fornever.haskeletor.module.StackProjectImportBuilder"/>
+        <projectOpenProcessor implementation="me.fornever.haskeletor.module.StackProjectOpenProcessor"/>
 
         <!-- Index -->
-        <fileBasedIndex implementation="intellij.haskell.util.index.HaskellModuleNameIndex"/>
-        <stubIndex implementation="intellij.haskell.psi.stubs.index.HaskellAllNameIndex"/>
-        <stubElementTypeHolder class="intellij.haskell.psi.HaskellTypes"/>
+        <fileBasedIndex implementation="me.fornever.haskeletor.util.index.HaskellModuleNameIndex"/>
+        <stubIndex implementation="me.fornever.haskeletor.psi.stubs.index.HaskellAllNameIndex"/>
+        <stubElementTypeHolder class="me.fornever.haskeletor.psi.HaskellTypes"/>
 
         <!-- Spell Checker -->
         <spellchecker.support language="Haskell"
-                              implementationClass="intellij.haskell.spellchecker.HaskellSpellcheckingStrategy"/>
+                              implementationClass="me.fornever.haskeletor.spellchecker.HaskellSpellcheckingStrategy"/>
         <spellchecker.support language="Cabal"
-                              implementationClass="intellij.haskell.spellchecker.CabalSpellcheckingStrategy"/>
+                              implementationClass="me.fornever.haskeletor.spellchecker.CabalSpellcheckingStrategy"/>
         <spellchecker.bundledDictionaryProvider
-                implementation="intellij.haskell.spellchecker.HaskellBundledDictionaryProvider"/>
+                implementation="me.fornever.haskeletor.spellchecker.HaskellBundledDictionaryProvider"/>
 
         <!-- Configuration -->
         <applicationConfigurable
                 groupId="language"
                 id="Haskell.Configurable"
-                instance="intellij.haskell.settings.HaskellConfigurable"/>
-        <applicationService serviceImplementation="intellij.haskell.settings.HaskellSettingsPersistentStateComponent"/>
-        <framework.type implementation="intellij.haskell.framework.HaskellFrameworkType"/>
-        <lang.importOptimizer language="Haskell" implementationClass="intellij.haskell.editor.HaskellImportOptimizer"/>
+                instance="me.fornever.haskeletor.settings.HaskellConfigurable"/>
+        <applicationService serviceImplementation="me.fornever.haskeletor.settings.HaskellSettingsPersistentStateComponent"/>
+        <framework.type implementation="me.fornever.haskeletor.framework.HaskellFrameworkType"/>
+        <lang.importOptimizer language="Haskell" implementationClass="me.fornever.haskeletor.editor.HaskellImportOptimizer"/>
 
         <!-- Module -->
         <internalFileTemplate name="Haskell Module"/>
         <internalFileTemplate name="Alex Source"/>
         <internalFileTemplate name="Haskell Test Module"/>
-        <moduleType id="HASKELL_MODULE" implementationClass="intellij.haskell.module.HaskellModuleType"/>
-        <moduleConfigurationEditorProvider implementation="intellij.haskell.settings.HaskellModuleEditorsProvider"
+        <moduleType id="HASKELL_MODULE" implementationClass="me.fornever.haskeletor.module.HaskellModuleType"/>
+        <moduleConfigurationEditorProvider implementation="me.fornever.haskeletor.settings.HaskellModuleEditorsProvider"
                                            order="first"/>
 
         <!-- Runner -->
-        <actionPromoter implementation="intellij.haskell.runconfig.console.HaskellConsoleActionPromoter"/>
-        <configurationType implementation="intellij.haskell.runconfig.HaskellStackConfigurationType"/>
+        <actionPromoter implementation="me.fornever.haskeletor.runconfig.console.HaskellConsoleActionPromoter"/>
+        <configurationType implementation="me.fornever.haskeletor.runconfig.HaskellStackConfigurationType"/>
         <!-- Notification -->
         <editorNotificationProvider
-                implementation="intellij.haskell.notification.ConfigFileWatcherNotificationProvider"/>
-        <projectSdkSetupValidator implementation="intellij.haskell.notification.HaskellProjectSdkSetupValidator"/>
+                implementation="me.fornever.haskeletor.notification.ConfigFileWatcherNotificationProvider"/>
+        <projectSdkSetupValidator implementation="me.fornever.haskeletor.notification.HaskellProjectSdkSetupValidator"/>
 
         <!-- Mover -->
-        <!--<statementUpDownMover implementation="intellij.haskell.editor.HaskellStatementMover"/>-->
+        <!--<statementUpDownMover implementation="me.fornever.haskeletor.editor.HaskellStatementMover"/>-->
 
-        <checkinHandlerFactory implementation="intellij.haskell.action.HaskellReformatCheckinHandlerFactory"/>
-        <checkinHandlerFactory implementation="intellij.haskell.action.HaskellOptimizeImportsCheckinHandlerFactory"/>
+        <checkinHandlerFactory implementation="me.fornever.haskeletor.action.HaskellReformatCheckinHandlerFactory"/>
+        <checkinHandlerFactory implementation="me.fornever.haskeletor.action.HaskellOptimizeImportsCheckinHandlerFactory"/>
 
         <projectService serviceInterface="com.intellij.compiler.ProblemsView"
-                        serviceImplementation="intellij.haskell.editor.HaskellProblemsView"
+                        serviceImplementation="me.fornever.haskeletor.editor.HaskellProblemsView"
                         overrides="true"/>
 
         <applicationService serviceInterface="com.intellij.codeInsight.TargetElementUtil"
-                            serviceImplementation="intellij.haskell.navigation.HaskellTargetElementUtil"
+                            serviceImplementation="me.fornever.haskeletor.navigation.HaskellTargetElementUtil"
                             overrides="true"/>
 
         <targetElementEvaluator language="Haskell"
-                                implementationClass="intellij.haskell.navigation.HaskellTargetElementUtil2"/>
+                                implementationClass="me.fornever.haskeletor.navigation.HaskellTargetElementUtil2"/>
 
     </extensions>
 
@@ -245,21 +246,21 @@ SPDX-License-Identifier: Apache-2.0
         <!-- Add your application components here -->
     </application-components>
 
-    <project-components><component><implementation-class>intellij.haskell.external.component.StackProjectManager</implementation-class></component><component><implementation-class>intellij.haskell.external.component.HaskellDocumentationProvider</implementation-class></component></project-components>
+    <project-components><component><implementation-class>me.fornever.haskeletor.external.component.StackProjectManager</implementation-class></component><component><implementation-class>me.fornever.haskeletor.external.component.HaskellDocumentationProvider</implementation-class></component></project-components>
 
     <actions>
-        <action id="Haskell.HaskellFile" class="intellij.haskell.action.CreateHaskellFileAction"
+        <action id="Haskell.HaskellFile" class="me.fornever.haskeletor.action.CreateHaskellFileAction"
                 text="Haskell Module" description="Create new Haskell module">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
 
-        <action id="Haskell.AlexFile" class="intellij.haskell.alex.NewAlexFileAction">
+        <action id="Haskell.AlexFile" class="me.fornever.haskeletor.alex.NewAlexFileAction">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
 
         <group id="HaskellCodeEditor" text="Haskell" description="Haskell View Tools" icon="HaskellIcons.HaskellLogo"
                popup="true">
-            <action id="Haskell.ShowType" class="intellij.haskell.action.ShowTypeAction"
+            <action id="Haskell.ShowType" class="me.fornever.haskeletor.action.ShowTypeAction"
                     text="Show Type" description="Show type of (selected) expression">
 
                 <keyboard-shortcut first-keystroke="alt EQUALS" keymap="$default"/>
@@ -269,7 +270,7 @@ SPDX-License-Identifier: Apache-2.0
                 <keyboard-shortcut first-keystroke="ctrl alt p" keymap="Mac OS X 10.5+"/>
             </action>
 
-            <action id="Haskell.ShowTypeSticky" class="intellij.haskell.action.ShowTypeStickyAction"
+            <action id="Haskell.ShowTypeSticky" class="me.fornever.haskeletor.action.ShowTypeStickyAction"
                     text="Show Type (Sticky)" description="Show type of (selected) expression (Sticky)">
 
                 <keyboard-shortcut first-keystroke="ctrl alt g" keymap="$default"/>
@@ -277,7 +278,7 @@ SPDX-License-Identifier: Apache-2.0
                 <keyboard-shortcut first-keystroke="ctrl alt g" keymap="Mac OS X 10.5+"/>
             </action>
 
-            <action id="Haskell.ShowInfo" class="intellij.haskell.action.ShowNameInfoAction"
+            <action id="Haskell.ShowInfo" class="me.fornever.haskeletor.action.ShowNameInfoAction"
                     text="Show Info" description="Show info about identifier in context of file">
 
                 <keyboard-shortcut first-keystroke="alt shift EQUALS" keymap="$default"/>
@@ -288,7 +289,7 @@ SPDX-License-Identifier: Apache-2.0
             </action>
 
             <action id="Haskell.ShowErrorDescription"
-                    class="intellij.haskell.action.ShowProblemMessageAction"
+                    class="me.fornever.haskeletor.action.ShowProblemMessageAction"
                     text="Show Error" description="Show error/warning description">
                 <keyboard-shortcut first-keystroke="ctrl F10" keymap="$default"/>
                 <keyboard-shortcut first-keystroke="meta F10" keymap="Mac OS X"/>
@@ -296,7 +297,7 @@ SPDX-License-Identifier: Apache-2.0
             </action>
 
             <action id="Haskell.Hoogle.It"
-                    class="intellij.haskell.action.HoogleAction"
+                    class="me.fornever.haskeletor.action.HoogleAction"
                     text="Hoogle For It"
                     description="Hoogle for (selected) words">
                 <keyboard-shortcut first-keystroke="shift ctrl h" keymap="$default"/>
@@ -305,33 +306,33 @@ SPDX-License-Identifier: Apache-2.0
         </group>
 
         <group id="HaskellGhciMenu" text="GHCi" description="GHCi" popup="true" keep-content="true">
-            <action id="Haskell.SendToGhci" class="intellij.haskell.action.ghci.SendToConsoleAction"
+            <action id="Haskell.SendToGhci" class="me.fornever.haskeletor.action.ghci.SendToConsoleAction"
                     text="Send to GHCi" description="Execute selected command in GHCi"/>
 
-            <action id="Haskell.Ghci.LoadModule" class="intellij.haskell.action.ghci.LoadModuleAction"
+            <action id="Haskell.Ghci.LoadModule" class="me.fornever.haskeletor.action.ghci.LoadModuleAction"
                     text="Load module in GHCi" description="Load currently selected module in GHCi"/>
 
-            <action id="Haskell.Ghci.ReloadModules" class="intellij.haskell.action.ghci.ReloadModulesAction"
+            <action id="Haskell.Ghci.ReloadModules" class="me.fornever.haskeletor.action.ghci.ReloadModulesAction"
                     text="Reload modules in GHCi" description="Reload the current module set in GHCi"/>
 
             <action id="Haskell.Ghci.ReloadWithLastCommand"
-                    class="intellij.haskell.action.ghci.ReloadWithLastCommandAction"
+                    class="me.fornever.haskeletor.action.ghci.ReloadWithLastCommandAction"
                     text="Reload GHCi with last command" description="Re-execute last command after reloading modules"/>
         </group>
 
         <group id="HaskellMenu" text="Haskell" description="Haskell Tools" icon="HaskellIcons.HaskellLogo"
                keep-content="true">
-            <action id="Haskell.RestartStackRepl" class="intellij.haskell.action.RestartStackReplsAction"
+            <action id="Haskell.RestartStackRepl" class="me.fornever.haskeletor.action.RestartStackReplsAction"
                     text="Update Settings and restart REPLs"
                     description="Update Module Settings and restart REPLs">
             </action>
 
-            <action id="Haskell.BuildHoogleDatabase" class="intellij.haskell.action.BuildHoogleDbAction"
+            <action id="Haskell.BuildHoogleDatabase" class="me.fornever.haskeletor.action.BuildHoogleDbAction"
                     text="(Re)Build Hoogle database"
                     description="(Re)Generate Haskell documentation and (re)build local Hoogle database">
             </action>
 
-            <action id="Haskell.UpdateHaskellTools" class="intellij.haskell.action.UpdateHaskellToolsAction"
+            <action id="Haskell.UpdateHaskellTools" class="me.fornever.haskeletor.action.UpdateHaskellToolsAction"
                     text="Update Haskell Tools"
                     description="Update Haskell Tools with latest version of LTS-12">
             </action>
@@ -346,14 +347,14 @@ SPDX-License-Identifier: Apache-2.0
                popup="true">
 
             <action id="Haskell.ReformatCode"
-                    class="intellij.haskell.action.OrmoluReformatAction"
+                    class="me.fornever.haskeletor.action.OrmoluReformatAction"
                     text="Reformat Code by Ormolu"
                     description="Reformat code by Ormolu">
                 <keyboard-shortcut first-keystroke="ctrl alt SEMICOLON" keymap="$default"/>
             </action>
 
             <action id="Haskell.StylishHaskellFormat"
-                    class="intellij.haskell.action.StylishHaskellReformatAction"
+                    class="me.fornever.haskeletor.action.StylishHaskellReformatAction"
                     text="Reformat Code by Stylish-Haskell"
                     description="Reformat current file by Stylish-Haskell">
                 <keyboard-shortcut first-keystroke="ctrl alt u" keymap="$default"/>
@@ -365,14 +366,14 @@ SPDX-License-Identifier: Apache-2.0
         <group id="HaskellGoToMenu" text="Haskell" description="Haskell Goto Tools" icon="HaskellIcons.HaskellLogo"
                popup="true">
             <action id="Haskell.Hoogle.Navigation"
-                    class="intellij.haskell.action.HoogleNavigationAction"
+                    class="me.fornever.haskeletor.action.HoogleNavigationAction"
                     text="Navigation by Hoogle"
                     description="Navigation powered by Hoogle">
                 <keyboard-shortcut first-keystroke="shift alt h" keymap="$default"/>
             </action>
 
             <action id="Haskell.GotoInstanceDeclaration"
-                    class="intellij.haskell.action.GotoInstanceDeclarationAction"
+                    class="me.fornever.haskeletor.action.GotoInstanceDeclarationAction"
                     text="Instance Declaration"
                     description="Goto instance declaration">
                 <keyboard-shortcut first-keystroke="ctrl alt i" keymap="$default"/>
@@ -381,7 +382,7 @@ SPDX-License-Identifier: Apache-2.0
         </group>
 
         <action id="Haskell.Project.About"
-                class="intellij.haskell.action.AboutAction"
+                class="me.fornever.haskeletor.action.AboutAction"
                 text="About Haskell Project"
                 icon="HaskellIcons.HaskellLogo"
                 description="About Haskell GHC/tools used in project">
@@ -391,7 +392,7 @@ SPDX-License-Identifier: Apache-2.0
 
         <group id="Haskell.Runconfig">
             <action id="Haskell.ConsoleExecute"
-                    class="intellij.haskell.runconfig.console.HaskellConsoleExecuteAction">
+                    class="me.fornever.haskeletor.runconfig.console.HaskellConsoleExecuteAction">
                 <keyboard-shortcut first-keystroke="ENTER" keymap="$default"/>
             </action>
         </group>

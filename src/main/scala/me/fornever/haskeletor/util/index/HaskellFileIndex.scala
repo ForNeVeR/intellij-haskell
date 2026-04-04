@@ -1,0 +1,42 @@
+/*
+ * SPDX-FileCopyrightText: 2014-2022 Rik van der Kleij
+ * SPDX-FileCopyrightText: 2014-2022 intellij-haskell contributors <https://github.com/rikvdkleij/intellij-haskell>
+ * SPDX-FileCopyrightText: 2026 haskeletor contributors <https://github.com/ForNeVeR/haskeletor>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+package me.fornever.haskeletor.util.index
+
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
+import com.intellij.psi.search.{FileTypeIndex, GlobalSearchScope, GlobalSearchScopesCore}
+import me.fornever.haskeletor.HaskellFileType
+import me.fornever.haskeletor.util.HaskellFileUtil
+
+import scala.jdk.CollectionConverters._
+
+object HaskellFileIndex {
+
+  def findProjectHaskellFiles(project: Project): Iterable[PsiFile] = {
+    HaskellFileUtil.convertToHaskellFiles(project, findProjectFiles(project))
+  }
+
+  def findProjectProductionHaskellFiles(project: Project): Iterable[PsiFile] = {
+    HaskellFileUtil.convertToHaskellFiles(project, findProjectProductionFiles(project))
+  }
+
+  private def findProjectFiles(project: Project): Iterable[VirtualFile] = {
+    findFiles(project, GlobalSearchScope.projectScope(project))
+  }
+
+  private def findProjectProductionFiles(project: Project): Iterable[VirtualFile] = {
+    findFiles(project, GlobalSearchScopesCore.projectProductionScope(project))
+  }
+
+  private def findFiles(project: Project, searchScope: GlobalSearchScope): Iterable[VirtualFile] = {
+    FileTypeIndex.getFiles(HaskellFileType.INSTANCE, searchScope).asScala
+  }
+
+}

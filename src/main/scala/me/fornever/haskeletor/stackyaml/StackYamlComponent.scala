@@ -1,0 +1,113 @@
+/*
+ * SPDX-FileCopyrightText: 2014-2022 Rik van der Kleij
+ * SPDX-FileCopyrightText: 2014-2022 intellij-haskell contributors <https://github.com/rikvdkleij/intellij-haskell>
+ * SPDX-FileCopyrightText: 2026 haskeletor contributors <https://github.com/ForNeVeR/haskeletor>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+package me.fornever.haskeletor.stackyaml
+
+import com.intellij.openapi.project.Project
+import me.fornever.haskeletor.HaskellNotificationGroup
+import org.yaml.snakeyaml.Yaml
+
+import java.io.{File, FileInputStream, FileNotFoundException}
+import java.util
+import scala.jdk.CollectionConverters._
+
+object StackYamlComponent {
+
+  def isNixEnabled(project: Project): Boolean = {
+    {
+      for {
+        items <- getYamlItems(project)
+        nix <- items.get("nix").flatMap(Option(_)).map(_.asInstanceOf[java.util.LinkedHashMap[String, Any]].asScala.toMap)
+        enabled <- nix.get("enable").flatMap(Option(_))
+      } yield {
+        enabled match {
+          case b: Boolean if b => b
+          case _ => false
+        }
+      }
+    }.contains(true)
+  }
+
+  def getResolver(project: Project): Option[String] = {
+    val resolver = getYamlItems(project).flatMap(_.get("resolver"))
+    resolver.flatMap {
+      case m: util.Map[_, _] => m.asScala.headOption.map(_._2.asInstanceOf[String])
+      case s: String => Some(s)
+      case _ => None
+    }
+  }
+
+  def getPackagePaths(project: Project): Option[Seq[String]] = {
+    for {
+      items <- getYamlItems(project)
+      packages <- getPackages(project, items)
+    } yield {
+      packages match {
+        case p: util.ArrayList[_] =>
+          p.asScala.toSeq.flatMap {
+            case s: String if isNotURL(s) => Seq(s)
+            case m: util.Map[_, _] =>
+              val map = m.asInstanceOf[util.Map[String, Any]].asScala.toMap
+              val location = getLocation(project, map)
+              if (location.isDefined) {
+                getSubdirs(project, map).getOrElse(location.toSeq)
+              } else {
+                Seq()
+              }
+            case _ => Seq()
+          }
+        case _ => Seq()
+      }
+    }
+  }
+
+  private def getPackages(project: Project, items: Map[String, Any]): Option[Any] = {
+    items.get("packages") match {
+      case Some(p) => Some(p)
+      case _ =>
+        HaskellNotificationGroup.logInfoEvent(project, s"Could not find `packages` in `stack.yaml` file in project directory")
+        None
+    }
+  }
+
+  private def isNotURL(s: String) = {
+    !(s.startsWith("http://") || s.startsWith("https://"))
+  }
+
+  private def getLocation(project: Project, items: Map[String, Any]): Option[String] = {
+    items.get("location") match {
+      case Some(l: String) if isNotURL(l) => Some(l)
+      case _ =>
+        HaskellNotificationGroup.logErrorBalloonEvent(project, s"Only local paths are supported in `location` of `packages` in `stack.yaml`")
+        None
+    }
+  }
+
+  private def getSubdirs(project: Project, items: Map[String, Any]): Option[Seq[String]] = {
+    items.get("subdirs") match {
+      case Some(sd: util.ArrayList[_]) => Some(sd.asInstanceOf[util.ArrayList[String]].asScala.toSeq)
+      case _ => None
+    }
+  }
+
+  private def getYamlItems(project: Project): Option[Map[String, Any]] = {
+    try {
+      Option(new Yaml()
+        .load(new FileInputStream(new File(getYamlFilePath(project))))
+        .asInstanceOf[util.Map[String, Any]].asScala.toMap)
+    } catch {
+      case _: FileNotFoundException =>
+        HaskellNotificationGroup.logErrorEvent(project, s"Could not find `stack.yaml` file in project directory")
+        None
+    }
+  }
+
+  private def getYamlFilePath(project: Project): String = {
+    project.getBasePath + File.separator + "stack.yaml"
+  }
+}
