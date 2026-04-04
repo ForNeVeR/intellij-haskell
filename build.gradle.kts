@@ -5,6 +5,7 @@
  */
 
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.tasks.GenerateLexerTask
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 
 plugins {
@@ -51,6 +52,7 @@ dependencies {
     }
 }
 
+val generatedAlexLexerSourceBase = layout.buildDirectory.dir("generated/lexer/alex")
 val generatedHaskellLexerSourceBase = layout.buildDirectory.dir("generated/lexer/haskell")
 val generatedHaskellParserSourceBase = layout.buildDirectory.dir("generated/parser/haskell")
 
@@ -60,6 +62,7 @@ sourceSets {
             srcDirs(
                 "gen",
                 "src/main/scala",
+                generatedAlexLexerSourceBase,
                 generatedHaskellLexerSourceBase,
                 generatedHaskellParserSourceBase
             )
@@ -79,7 +82,12 @@ intellijPlatform {
 }
 
 tasks {
-    generateLexer {
+    val alexLexer by registering(GenerateLexerTask::class) {
+        sourceFile = file("src/main/flex/_AlexLexer.flex")
+        targetOutputDir = generatedAlexLexerSourceBase.map { it.dir("me/fornever/haskeletor/alex/lang/lexer") }
+        purgeOldFiles = true
+    }
+    val haskellLexer by registering(GenerateLexerTask::class) {
         sourceFile = file("src/main/flex/_HaskellLexer.flex")
         targetOutputDir = generatedHaskellLexerSourceBase.map { it.dir("me/fornever/haskeletor") }
         purgeOldFiles = true
@@ -91,8 +99,13 @@ tasks {
         pathToParser = "me/fornever/haskeletor/HaskellParser"
         pathToPsiRoot = "me/fornever/haskeletor/psi"
     }
+
     withType<ScalaCompile> {
-        dependsOn(generateLexer, generateParser)
+        dependsOn(
+            alexLexer,
+            haskellLexer,
+            generateParser
+        )
         scalaCompileOptions.additionalParameters = listOf(
             "-deprecation", "-feature", "-unchecked"
         )
