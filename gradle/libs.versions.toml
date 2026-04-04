@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [libraries]
-scala-library = { module = "org.scala-lang:scala-library", version = "2.13.8" }
+scala-library = { module = "org.scala-lang:scala-library", version = "2.13.18" }
 spray-json = { module = "io.spray:spray-json_2.13", version = "1.3.6" }
 snakeyaml = { module = "org.yaml:snakeyaml", version = "1.30" }
 scaffeine = { module = "com.github.blemale:scaffeine_2.13", version = "5.1.2" }
