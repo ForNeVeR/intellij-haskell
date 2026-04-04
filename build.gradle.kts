@@ -9,8 +9,9 @@ import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 
 plugins {
     id("scala")
-    alias(libs.plugins.intellij.platform)
     alias(libs.plugins.gradle.jvm.wrapper)
+    alias(libs.plugins.intellij.grammar.kit)
+    alias(libs.plugins.intellij.platform)
 }
 
 jvmWrapper {
@@ -50,10 +51,15 @@ dependencies {
     }
 }
 
+val generatedLexerBase = layout.buildDirectory.dir("generated/lexer")
 sourceSets {
     main {
         scala {
-            srcDirs("src/main/scala", "gen")
+            srcDirs(
+                "gen",
+                "src/main/scala",
+                generatedLexerBase
+            )
         }
     }
     test {
@@ -70,18 +76,21 @@ intellijPlatform {
 }
 
 tasks {
+    generateLexer {
+        sourceFile = file("src/main/flex/_HaskellLexer.flex")
+        targetOutputDir = generatedLexerBase.map { it.dir("me/fornever/haskeletor") }
+        purgeOldFiles = true
+    }
+    withType<ScalaCompile> {
+        dependsOn(generateLexer)
+        scalaCompileOptions.additionalParameters = listOf(
+            "-deprecation", "-feature", "-unchecked"
+        )
+    }
     named<PrepareSandboxTask>("prepareSandbox") {
         from(listOf("README.md", "LICENSE.txt")) {
             into(pluginName)
         }
-    }
-    withType<ScalaCompile> {
-        scalaCompileOptions.additionalParameters = listOf(
-            "-target:jvm-17", "-deprecation", "-feature", "-unchecked"
-        )
-    }
-    withType<JavaCompile> {
-        options.release.set(17)
     }
     test {
         useJUnit()
