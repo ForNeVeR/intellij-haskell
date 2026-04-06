@@ -21,8 +21,10 @@ import me.fornever.haskeletor.annotator.HaskellAnnotator
 import me.fornever.haskeletor.external.component.HaskellComponentsManager.ComponentTarget
 import me.fornever.haskeletor.external.component._
 import me.fornever.haskeletor.icons.HaskellIcons
+import me.fornever.haskeletor.psi.HaskellPsiExtensions._
 import me.fornever.haskeletor.psi.HaskellTypes._
 import me.fornever.haskeletor.psi._
+import me.fornever.haskeletor.psi.impl.HaskellDeclarationElementImpl
 import me.fornever.haskeletor.runconfig.console.{HaskellConsoleView, HaskellConsoleViewMap}
 import me.fornever.haskeletor.util._
 import me.fornever.haskeletor.{HaskellFile, HaskellParserDefinition}
@@ -30,8 +32,6 @@ import org.apache.commons.lang.StringEscapeUtils
 
 import scala.jdk.CollectionConverters._
 import scala.util.matching.Regex
-
-import me.fornever.haskeletor.psi.HaskellPsiExtensions._
 
 class HaskellCompletionContributor extends CompletionContributor {
 
@@ -420,7 +420,7 @@ class HaskellCompletionContributor extends CompletionContributor {
   }
 
   private def findTopLeveLookupElements(psiFile: PsiFile, currentElement: Option[HaskellNamedElement]): Iterable[LookupElementBuilder] = {
-    def createTopLevelDeclarationLookupElement(e: HaskellNamedElement, d: HaskellDeclarationElement) = {
+    def createTopLevelDeclarationLookupElement(e: HaskellNamedElement, d: HaskellDeclarationElementImpl) = {
       createLocalTopLevelLookupElement(ApplicationUtil.runReadAction(e.getName), ApplicationUtil.runReadAction(d.getPresentation.getPresentableText))
     }
 
@@ -438,8 +438,8 @@ class HaskellCompletionContributor extends CompletionContributor {
                   case Some(ce) => Some(LookupElementBuilder.create(e.getName).withTypeText(s"${ce.getText} -> $dataType"))
                   case None => Some(createTopLevelDeclarationLookupElement(e, d))
                 })
-            case d: HaskellDeclarationElement if !d.isInstanceOf[HaskellTypeSignature] => Some(createTopLevelDeclarationLookupElement(e, d))
-            case d: HaskellDeclarationElement if d.isInstanceOf[HaskellTypeSignature] =>
+            case d: HaskellDeclarationElementImpl if !d.isInstanceOf[HaskellTypeSignature] => Some(createTopLevelDeclarationLookupElement(e, d))
+            case d: HaskellDeclarationElementImpl if d.isInstanceOf[HaskellTypeSignature] =>
               if (!d.getIdentifierElements.headOption.map(_.getName).exists(n => expressionElements.toSeq.map(_.getName).contains(n))) {
                 Some(createTopLevelDeclarationLookupElement(e, d))
               } else {
@@ -451,7 +451,7 @@ class HaskellCompletionContributor extends CompletionContributor {
     expressionLookupElements ++ declarationLookupElements
   }
 
-  private def getIdentifiers(declarationElement: HaskellDeclarationElement) = {
+  private def getIdentifiers(declarationElement: HaskellDeclarationElementImpl) = {
     ApplicationUtil.runReadAction(declarationElement.getIdentifierElements)
   }
 

@@ -20,6 +20,7 @@ import com.intellij.psi.{PsiElement, PsiFile, PsiManager, TokenType}
 import me.fornever.haskeletor.HaskellNotificationGroup
 import me.fornever.haskeletor.psi.HaskellElementCondition._
 import me.fornever.haskeletor.psi.HaskellTypes._
+import me.fornever.haskeletor.psi.impl.{HaskellDeclarationElementImpl, HaskellModuleDeclarationImpl}
 import me.fornever.haskeletor.util.ApplicationUtil
 
 import scala.annotation.tailrec
@@ -102,23 +103,23 @@ object HaskellPsiUtil {
     PsiTreeUtil.findChildrenOfType(psiElement, classOf[HaskellQualifiedNameElement]).asScala
   }
 
-  def findHaskellDeclarationElements(psiElement: PsiElement): Iterable[HaskellDeclarationElement] = {
+  def findHaskellDeclarationElements(psiElement: PsiElement): Iterable[HaskellDeclarationElementImpl] = {
     ProgressManager.checkCanceled()
-    val declarations = ApplicationUtil.runReadAction(PsiTreeUtil.findChildrenOfType(psiElement, classOf[HaskellDeclarationElement]).asScala, Some(psiElement.getProject))
+    val declarations = ApplicationUtil.runReadAction(PsiTreeUtil.findChildrenOfType(psiElement, classOf[HaskellDeclarationElementImpl]).asScala, Some(psiElement.getProject))
     ProgressManager.checkCanceled()
     declarations.filter(e => e.getParent.getNode.getElementType == HS_TOP_DECLARATION || e.getNode.getElementType == HS_MODULE_DECLARATION)
   }
 
-  def findTopLevelDeclarations(psiFile: PsiFile): Iterable[HaskellDeclarationElement] = {
+  def findTopLevelDeclarations(psiFile: PsiFile): Iterable[HaskellDeclarationElementImpl] = {
     findHaskellDeclarationElements(psiFile).filterNot(e => Seq(HS_IMPORT_DECLARATION, HS_MODULE_DECLARATION).contains(e.getNode.getElementType))
   }
 
   def findModuleDeclaration(psiFile: PsiFile): Option[HaskellModuleDeclaration] = {
-    Option(PsiTreeUtil.findChildOfType(psiFile.getOriginalFile, classOf[HaskellModuleDeclaration]))
+    Option(PsiTreeUtil.findChildOfType(psiFile.getOriginalFile, classOf[HaskellModuleDeclarationImpl]))
   }
 
   def findModuleNameInPsiTree(psiFile: PsiFile): Option[String] = {
-    Option(PsiTreeUtil.findChildOfType(psiFile.getOriginalFile, classOf[HaskellModuleDeclaration])).flatMap(_.getModuleName)
+    Option(PsiTreeUtil.findChildOfType(psiFile.getOriginalFile, classOf[HaskellModuleDeclarationImpl])).flatMap(_.getModuleName)
   }
 
   private final val ModuleNameCache: LoadingCache[PsiFile, Option[String]] = Scaffeine().build((psiFile: PsiFile) => {
@@ -190,17 +191,17 @@ object HaskellPsiUtil {
     }
   }
 
-  def findHighestDeclarationElement(psiElement: PsiElement): Option[HaskellDeclarationElement] = {
+  def findHighestDeclarationElement(psiElement: PsiElement): Option[HaskellDeclarationElementImpl] = {
     psiElement match {
-      case e: HaskellDeclarationElement => Some(e)
-      case e => Option(PsiTreeUtil.findFirstParent(e, HighestDeclarationElementCondition)).map(_.asInstanceOf[HaskellDeclarationElement])
+      case e: HaskellDeclarationElementImpl => Some(e)
+      case e => Option(PsiTreeUtil.findFirstParent(e, HighestDeclarationElementCondition)).map(_.asInstanceOf[HaskellDeclarationElementImpl])
     }
   }
 
-  def findDeclarationElement(psiElement: PsiElement): Option[HaskellDeclarationElement] = {
+  def findDeclarationElement(psiElement: PsiElement): Option[HaskellDeclarationElementImpl] = {
     psiElement match {
-      case e: HaskellDeclarationElement => Some(e)
-      case e => Option(PsiTreeUtil.findFirstParent(e, DeclarationElementCondition)).map(_.asInstanceOf[HaskellDeclarationElement])
+      case e: HaskellDeclarationElementImpl => Some(e)
+      case e => Option(PsiTreeUtil.findFirstParent(e, DeclarationElementCondition)).map(_.asInstanceOf[HaskellDeclarationElementImpl])
     }
   }
 

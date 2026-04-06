@@ -30,9 +30,12 @@
   elementTypeFactory("varid|varsym|conid|consym|modid")="me.fornever.haskeletor.psi.impl.HaskellElementTypeFactory.factory"
 
   implements("type_signature|type_declaration|class_declaration|instance_declaration|type_family_declaration|deriving_declaration|type_instance_declaration|default_declaration")="me.fornever.haskeletor.psi.HaskellDeclarationElement"
+  extends("type_signature|type_declaration|class_declaration|instance_declaration|type_family_declaration|deriving_declaration|type_instance_declaration|default_declaration")="me.fornever.haskeletor.psi.impl.HaskellDeclarationElementImpl"
   implements("default_declaration|foreign_declaration|module_declaration")="me.fornever.haskeletor.psi.HaskellDeclarationElement"
+  extends("default_declaration|foreign_declaration|module_declaration")="me.fornever.haskeletor.psi.impl.HaskellDeclarationElementImpl"
 
   implements("data_declaration|newtype_declaration")="me.fornever.haskeletor.psi.HaskellDataConstructorDeclarationElement"
+  extends("data_declaration|newtype_declaration")="me.fornever.haskeletor.psi.impl.HaskellDeclarationElementImpl"
 
   implements("q_name")="me.fornever.haskeletor.psi.HaskellQualifiedNameElement"
 

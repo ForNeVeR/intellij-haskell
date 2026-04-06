@@ -179,7 +179,7 @@ object HaskellPsiImplUtil {
     }
   }
 
-  def getPresentation(declarationElement: HaskellDeclarationElement): ItemPresentation = {
+  def getPresentation(declarationElement: HaskellDeclarationElementImpl): ItemPresentation = {
 
     new HaskellItemPresentation(declarationElement) {
       def getPresentableText: String = {
@@ -199,14 +199,14 @@ object HaskellPsiImplUtil {
     }
   }
 
-  private def getDeclarationText(declarationElement: HaskellDeclarationElement): String = {
+  private def getDeclarationText(declarationElement: HaskellDeclarationElementImpl): String = {
     declarationElement match {
       case md: HaskellModuleDeclaration => s"module  ${getName(md.getModid)}"
       case de => StringUtil.sanitizeDeclaration(de.getText)
     }
   }
 
-  def getName(declarationElement: HaskellDeclarationElement): String = {
+  def getName(declarationElement: HaskellDeclarationElementImpl): String = {
     declarationElement.getPresentation.getPresentableText
   }
 
