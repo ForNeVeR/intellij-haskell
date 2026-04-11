@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [versions]
-intellij-gradle = "2.13.1"
+intellij-gradle = "2.14.0"
 
 [libraries]
 spray-json = { module = "io.spray:spray-json_2.13", version = "1.3.6" }
