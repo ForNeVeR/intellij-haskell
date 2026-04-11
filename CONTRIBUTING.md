@@ -34,6 +34,11 @@ Execute the following shell command:
 $ ./gradlew test
 ```
 
+If you wish to perform a full automated check, including the integration tests and the plugin verification, execute the following shell command:
+```console
+$ ./gradlew check
+```
+
 Local Deployment
 ----------------
 To run the development version of the plugin, execute the following shell command:

@@ -72,8 +72,8 @@ let workflows = [
                 run = "./gradlew buildPlugin"
             )
             step(
-                name = "Run tests",
-                run = "./gradlew test"
+                name = "Check",
+                run = "./gradlew check"
             )
         ]
         sourceJob "encoding" [

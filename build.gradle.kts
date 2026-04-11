@@ -7,6 +7,7 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.exceptions.MissingVersionException
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 import org.jetbrains.intellij.platform.gradle.tasks.GenerateLexerTask
 import org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
@@ -101,6 +102,17 @@ intellijPlatform {
             )
         }
     }
+    pluginVerification {
+        ides {
+            select {
+                channels = listOf(
+                    ProductRelease.Channel.RELEASE,
+                    ProductRelease.Channel.EAP
+                )
+                untilBuild = providers.gradleProperty("untilBuildForVerification")
+            }
+        }
+    }
 }
 
 tasks {
@@ -161,5 +173,8 @@ tasks {
     test {
         useJUnit()
         workingDir = project.projectDir
+    }
+    check {
+        dependsOn(verifyPlugin)
     }
 }

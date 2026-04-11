@@ -39,8 +39,8 @@ jobs:
       uses: gradle/actions/setup-gradle@v6
     - name: Build plugin
       run: ./gradlew buildPlugin
-    - name: Run tests
-      run: ./gradlew test
+    - name: Check
+      run: ./gradlew check
   encoding:
     runs-on: ubuntu-24.04
     steps:
