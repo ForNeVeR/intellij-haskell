@@ -165,6 +165,7 @@ let workflows = [
                 name = "Upload the plugin",
                 usesSpec = Auto "actions/upload-artifact",
                 options = Map.ofList [
+                    "archive", "false"
                     "name", "haskeletor-${{ steps.version.outputs.version }}.zip"
                     "path", "build/distributions/haskeletor-${{ steps.version.outputs.version }}.zip"
                 ]
