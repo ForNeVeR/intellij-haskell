@@ -36,7 +36,12 @@ $ ./gradlew test
 
 Local Deployment
 ----------------
-Execute the following shell command:
+To run the development version of the plugin, execute the following shell command:
+```console
+$ ./gradlew runIde
+```
+
+If you want to install the locally-built plugin to your IDE, execute the following shell command:
 ```console
 $ ./gradlew buildPlugin
 ```
@@ -48,7 +53,7 @@ Opening in the IDE
 1. Make sure you have a compatible version of the JDK set up for the project.
 2. Open the project in IntelliJ IDEA.
 
-Development remarks
+Development Remarks
 -------------------
 This project uses several `.flex` files for lexer definitions, and `.bnf` files for parser definitions.
 
