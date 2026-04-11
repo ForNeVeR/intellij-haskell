@@ -16,8 +16,9 @@
         <ul>
             <li>This plugin depends mainly on Stack.</li>
             <li>It can create new Stack projects and import existing Stack projects.</li>
-            <li>Please <a href="https://github.com/rikvdkleij/intellij-haskell/blob/master/README.md">README</a></li>
+            <li>Please <a href="https://github.com/ForNeVeR/haskeletor/blob/HEAD/README.md">README</a>.</li>
         </ul>
+        <p>This plugin is based on <a href="https://github.com/rikvdkleij/intellij-haskell">the work of Rik van der Kleij and intellij-haskell contributors</a>.</p>
     ]]></description>
 
     <extensions defaultExtensionNs="com.intellij">
