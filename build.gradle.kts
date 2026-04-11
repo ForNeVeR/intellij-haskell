@@ -50,6 +50,7 @@ dependencies {
     intellijPlatform {
         intellijIdeaCommunity(providers.gradleProperty("platformVersion"))
         bundledPlugin("com.intellij.java")
+        testFramework(TestFrameworkType.Bundled)
         testFramework(TestFrameworkType.Platform)
     }
 }
