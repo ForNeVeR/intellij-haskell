@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!--
-SPDX-FileCopyrightText: 2014-2022 Rik van der Kleij
-SPDX-FileCopyrightText: 2014-2022 intellij-haskell contributors <https://github.com/rikvdkleij/intellij-haskell>
-
-SPDX-License-Identifier: Apache-2.0
--->
-
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="intellij.haskell.runconfig.console.HaskellConsoleConfigurationForm">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="me.fornever.haskeletor.runconfig.console.HaskellConsoleConfigurationForm">
   <grid id="27dc6" binding="myPanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="30" right="0"/>
     <constraints>
