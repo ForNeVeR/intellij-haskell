@@ -68,6 +68,5 @@ jobs:
       name: Publish the plugin
       shell: pwsh
       run: ./gradlew publishPlugin
-      working-directory: intellij
       env:
         PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}

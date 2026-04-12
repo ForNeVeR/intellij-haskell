@@ -234,7 +234,6 @@ let workflows = [
                     "PUBLISH_TOKEN", "${{ secrets.PUBLISH_TOKEN }}"
                 ],
                 shell = "pwsh",
-                workingDirectory = "intellij",
                 run = "./gradlew publishPlugin"
             )
         ]
