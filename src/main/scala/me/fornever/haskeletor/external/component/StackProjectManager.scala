@@ -10,7 +10,7 @@ package me.fornever.haskeletor.external.component
 
 import com.intellij.ProjectTopics
 import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.{ApplicationManager, WriteAction}
 import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.progress.{PerformInBackgroundOption, ProgressIndicator, ProgressManager, Task}
 import com.intellij.openapi.project.Project
@@ -29,6 +29,7 @@ import me.fornever.haskeletor.external.repl.StackRepl.LibType
 import me.fornever.haskeletor.external.repl.StackReplsManager
 import me.fornever.haskeletor.module.{HaskellModuleBuilder, StackProjectImportBuilder}
 import me.fornever.haskeletor.notification.ConfigFileWatcher
+import me.fornever.haskeletor.psi.HaskellPsiExtensions._
 import me.fornever.haskeletor.psi.HaskellPsiUtil
 import me.fornever.haskeletor.psi.stubs.types.HaskellFileElementType
 import me.fornever.haskeletor.sdk.HaskellSdkType
@@ -38,8 +39,6 @@ import me.fornever.haskeletor.util.index.{HaskellFileIndex, HaskellModuleNameInd
 import me.fornever.haskeletor.{GlobalInfo, HTool, HaskellNotificationGroup}
 
 import java.io.File
-
-import me.fornever.haskeletor.psi.HaskellPsiExtensions._
 
 object StackProjectManager {
 
@@ -493,9 +492,11 @@ class StackProjectManager(project: Project) extends ProjectComponent {
   private def fixSdkStackVersion(): Unit = {
     val sdks = ProjectJdkTable.getInstance.getSdksOfType(HaskellSdkType.getInstance)
     sdks.forEach { sdk =>
-      val sdkModificator = sdk.getSdkModificator
-      sdkModificator.setVersionString(HaskellSdkType.getInstance.getVersionString(sdk))
-      sdkModificator.commitChanges()
+      WriteAction.run(() => {
+        val sdkModificator = sdk.getSdkModificator
+        sdkModificator.setVersionString(HaskellSdkType.getInstance.getVersionString(sdk))
+        sdkModificator.commitChanges()
+      })
     }
   }
 }
