@@ -173,7 +173,7 @@ private class CapturingProcessToProgressIndicator(@Nls title: String, progressIn
       case PackageStatus(_, _) => ()
       case Progress(done, total, packagesInProgress) =>
         progressIndicator.setFraction(done.toDouble / total.toDouble)
-        progressIndicator.setText(HaskeletorBundle.message("stack.progress.text", title, done, total))
+        progressIndicator.setText(HaskeletorBundle.message("progress.installing-tool.text", title, done, total))
         progressIndicator.setText2(packagesInProgress match {
           case Seq() =>
             //noinspection ScalaExtractStringToBundle
@@ -182,7 +182,7 @@ private class CapturingProcessToProgressIndicator(@Nls title: String, progressIn
             val packagesToShow = packagesInProgress.take(3)
             val packagesToShowText = NlsMessages.formatNarrowAndList(packagesToShow.asJava)
             val otherPackageCount = packagesInProgress.size - packagesToShow.size
-            HaskeletorBundle.message("stack.progress.packages-in-progress", packagesToShowText, otherPackageCount)
+            HaskeletorBundle.message("progress.installing-tool.in-progress", packagesToShowText, otherPackageCount)
         })
     }
 

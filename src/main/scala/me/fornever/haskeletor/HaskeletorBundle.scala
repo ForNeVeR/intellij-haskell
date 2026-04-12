@@ -7,9 +7,11 @@
 package me.fornever.haskeletor
 
 import com.intellij.DynamicBundle
-import org.jetbrains.annotations.PropertyKey
+import org.jetbrains.annotations.{Nls, PropertyKey}
 
 object HaskeletorBundle extends DynamicBundle(HaskeletorBundle.BUNDLE) {
   private final val BUNDLE = "messages.HaskeletorBundle"
+
+  @Nls
   def message(@PropertyKey(resourceBundle = BUNDLE) key: String, params: Any*): String = getMessage(key, params: _*)
 }

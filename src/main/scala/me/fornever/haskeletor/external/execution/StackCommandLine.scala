@@ -96,7 +96,7 @@ object StackCommandLine {
       project,
       workDir = Some(VfsUtil.getUserHomeDir.getPath),
       arguments,
-      HaskeletorBundle.message("stack.install.title", toolName),
+      HaskeletorBundle.message("progress.installing-tool.title", toolName),
       Some(progressIndicator)
     ).exists(handler => {
 

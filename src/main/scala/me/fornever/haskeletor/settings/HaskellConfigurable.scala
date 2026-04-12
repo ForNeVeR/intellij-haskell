@@ -11,6 +11,7 @@ package me.fornever.haskeletor.settings
 import com.intellij.openapi.options.{Configurable, ConfigurationException}
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.ui.DocumentAdapter
+import me.fornever.haskeletor.HaskeletorBundle
 
 import java.awt.{GridBagConstraints, GridBagLayout, Insets}
 import javax.swing._
@@ -32,9 +33,7 @@ class HaskellConfigurable extends Configurable {
   private val extraStackArgumentsField = new JTextField
   private val defaultGhcOptionsField = new JTextField
 
-  override def getDisplayName: String = {
-    "Haskell"
-  }
+  override def getDisplayName: String = HaskeletorBundle.message("configurable.haskell.title")
 
   override def isModified: Boolean = this.isModifiedByUser
 
