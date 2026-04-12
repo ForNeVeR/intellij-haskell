@@ -32,6 +32,8 @@ let workflows = [
         onPushTo "master"
         onPushTo "renovate/**"
         onPullRequestTo "master"
+        onSchedule "0 0 * * 6"
+        onWorkflowDispatch
     ]
 
     let sourceJob name body = job name [
@@ -107,6 +109,50 @@ let workflows = [
             step(
                 name = "Verify workflows",
                 run = "dotnet fsi ./scripts/github-actions.fsx verify"
+            )
+        ]
+    ]
+
+    workflow "dependencies" [
+        name "Dependency Updater"
+        yield! mainTriggers
+
+        sourceJob "main" [
+            jobPermission(PermissionKind.Contents, AccessKind.Write)
+            jobPermission(PermissionKind.PullRequests, AccessKind.Write)
+            runsOn defaultLinux
+            jobTimeout 15
+            step(
+                id = "update",
+                usesSpec = Auto "ForNeVeR/intellij-updater",
+                name = "Update the dependency versions"
+            )
+
+            let whenNeedsAPr = "steps.update.outputs.has-changes == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')"
+
+            step(
+                condition = whenNeedsAPr,
+                usesSpec = Auto "actions/create-github-app-token",
+                name = "Generate a token to make a PR",
+                id = "generate-token",
+                options = Map.ofList [
+                    "app-id", "${{ secrets.IJ_UPDATER_APP_ID }}"
+                    "private-key", "${{ secrets.IJ_UPDATER_PRIVATE_KEY }}"
+                ]
+            )
+
+            step(
+                condition = whenNeedsAPr,
+                name = "Create a PR",
+                usesSpec = Auto "peter-evans/create-pull-request",
+                options = Map.ofList [
+                    "token", "${{ steps.generate-token.outputs.token }}"
+                    "branch", "${{ steps.update.outputs.branch-name }}"
+                    "author", "haskeletor automation <friedrich@fornever.me>"
+                    "commit-message", "${{ steps.update.outputs.commit-message }}"
+                    "title", "${{ steps.update.outputs.pr-title }}"
+                    "body-path", "${{ steps.update.outputs.pr-body-path }}"
+                ]
             )
         ]
     ]

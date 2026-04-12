@@ -4,6 +4,7 @@
 
 [versions]
 intellij-gradle = "2.14.0"
+intellij-platform = "2026.1"
 
 [libraries]
 spray-json = { module = "io.spray:spray-json_2.13", version = "1.3.6" }

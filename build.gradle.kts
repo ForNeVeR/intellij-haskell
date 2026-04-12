@@ -49,7 +49,7 @@ dependencies {
     testImplementation(libs.scalatestplus.junit)
 
     intellijPlatform {
-        intellijIdea(providers.gradleProperty("platformVersion"))
+        intellijIdea(libs.versions.intellij.platform)
         bundledPlugin("com.intellij.java")
         testFramework(TestFrameworkType.Bundled)
         testFramework(TestFrameworkType.Platform)
