@@ -113,6 +113,9 @@ intellijPlatform {
             }
         }
     }
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
+    }
 }
 
 tasks {
