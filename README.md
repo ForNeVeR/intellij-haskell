@@ -112,7 +112,7 @@ Copyright holders:
 - 2014-2022 intellij-haskell contributors <https://github.com/rikvdkleij/intellij-haskell>
 - 2014-2022 Rik van der Kleij
 - 2024-2026 Friedrich von Never <friedrich@fornever.me>
-- 2026 haskeletor contributors <https://github.com/ForNeVeR/haskeletor>
+- 2024-2026 haskeletor contributors <https://github.com/ForNeVeR/haskeletor>
 
 <!-- REUSE-IgnoreEnd -->
 
