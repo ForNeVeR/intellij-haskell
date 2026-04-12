@@ -6,8 +6,8 @@ SPDX-FileCopyrightText: 2026 haskeletor contributors <https://github.com/ForNeVe
 SPDX-License-Identifier: Apache-2.0
 -->
 
-![logo](logo/icon_intellij_haskell_32.png) Haskeletor
-=======================
+![Plugin Logo][image.logo] Haskeletor [![Download][badge.plugin]][marketplace.plugin]
+=====================================================================================
 Haskeletor is a Haskell plugin for IntelliJ IDEA.
 
 It supports code highlighting, code completion, compilation error highlighting — everything you need from an IDE for Haskell.
@@ -16,6 +16,16 @@ This plugin is based on [the work of Rik van der Kleij and intellij-haskell cont
 
 Installation
 ------------
+### From JetBrains Marketplace
+1. Open the IDE **Plugins** settings page.
+2. Search for **Haskeletor** in the search bar.
+3. Click **Install** to install the plugin.
+
+Alternatively, [download the plugin from the Marketplace in the browser][marketplace.plugin].
+
+### From the Releases Page
+1. Download the latest release from the [Releases page][releases].
+2. Use the **Install Plugin from Disk** action to install it into your IDE.
 
 ### From Sources
 Read [the contributor guide][docs.contributing]. Short version:
@@ -116,7 +126,11 @@ Copyright holders:
 
 <!-- REUSE-IgnoreEnd -->
 
+[badge.plugin]: https://img.shields.io/jetbrains/plugin/v/31233.svg
 [docs.contributing]: CONTRIBUTING.md
 [docs.license]: LICENSE.txt
 [docs.maintaining]: MAINTAINING.md
+[image.logo]: logo/icon_intellij_haskell_32.png
+[marketplace.plugin]: https://plugins.jetbrains.com/plugin/31233-haskeletor
+[releases]: https://github.com/ForNeVeR/haskeletor/releases
 [reuse.spec]: https://reuse.software/spec-3.3/
