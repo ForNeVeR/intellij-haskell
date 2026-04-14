@@ -11,6 +11,7 @@ import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 import org.jetbrains.intellij.platform.gradle.tasks.GenerateLexerTask
 import org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
+import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask
 
 plugins {
     id("scala")
@@ -112,6 +113,10 @@ intellijPlatform {
                 untilBuild = providers.gradleProperty("untilBuildForVerification")
             }
         }
+        failureLevel.addAll(
+            VerifyPluginTask.FailureLevel.INTERNAL_API_USAGES,
+            VerifyPluginTask.FailureLevel.OVERRIDE_ONLY_API_USAGES
+        )
     }
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN")
