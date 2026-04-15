@@ -259,7 +259,7 @@
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
 
-        <group id="HaskellCodeEditor" text="Haskell" description="Haskell View Tools" icon="HaskellIcons.HaskellLogo"
+        <group id="HaskellCodeEditor" text="Haskell" description="Haskell View Tools" icon="me.fornever.haskeletor.icons.HaskellIcons.HaskellLogo"
                popup="true">
             <action id="Haskell.ShowType" class="me.fornever.haskeletor.action.ShowTypeAction"
                     text="Show Type" description="Show type of (selected) expression">
@@ -321,7 +321,7 @@
                     text="Reload GHCi with last command" description="Re-execute last command after reloading modules"/>
         </group>
 
-        <group id="HaskellMenu" text="Haskell" description="Haskell Tools" icon="HaskellIcons.HaskellLogo"
+        <group id="HaskellMenu" text="Haskell" description="Haskell Tools" icon="me.fornever.haskeletor.icons.HaskellIcons.HaskellLogo"
                keep-content="true">
             <action id="Haskell.RestartStackRepl" class="me.fornever.haskeletor.action.RestartStackReplsAction"
                     text="Update Settings and restart REPLs"
@@ -344,7 +344,7 @@
         </group>
 
 
-        <group id="HaskellCodeMenu" text="Haskell" description="Haskell Code Tools" icon="HaskellIcons.HaskellLogo"
+        <group id="HaskellCodeMenu" text="Haskell" description="Haskell Code Tools" icon="me.fornever.haskeletor.icons.HaskellIcons.HaskellLogo"
                popup="true">
 
             <action id="Haskell.ReformatCode"
@@ -364,7 +364,7 @@
             <add-to-group group-id="CodeMenu" anchor="last"/>
         </group>
 
-        <group id="HaskellGoToMenu" text="Haskell" description="Haskell Goto Tools" icon="HaskellIcons.HaskellLogo"
+        <group id="HaskellGoToMenu" text="Haskell" description="Haskell Goto Tools" icon="me.fornever.haskeletor.icons.HaskellIcons.HaskellLogo"
                popup="true">
             <action id="Haskell.Hoogle.Navigation"
                     class="me.fornever.haskeletor.action.HoogleNavigationAction"
@@ -385,7 +385,7 @@
         <action id="Haskell.Project.About"
                 class="me.fornever.haskeletor.action.AboutAction"
                 text="About Haskell Project"
-                icon="HaskellIcons.HaskellLogo"
+                icon="me.fornever.haskeletor.icons.HaskellIcons.HaskellLogo"
                 description="About Haskell GHC/tools used in project">
             <add-to-group group-id="HelpMenu" anchor="last"/>
         </action>
