@@ -8,7 +8,7 @@
 
 package me.fornever.haskeletor.settings
 
-import com.intellij.openapi.options.{Configurable, ConfigurationException}
+import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.ui.DocumentAdapter
 import me.fornever.haskeletor.HaskeletorBundle
@@ -17,7 +17,7 @@ import java.awt.{GridBagConstraints, GridBagLayout, Insets}
 import javax.swing._
 import javax.swing.event.DocumentEvent
 
-class HaskellConfigurable extends Configurable {
+class HaskellConfigurable extends HaskellConfigurableBase {
   private var isModifiedByUser = false
   private val hlintOptionsField = new JTextField
   private val useSystemGhcToggle = new JCheckBox
