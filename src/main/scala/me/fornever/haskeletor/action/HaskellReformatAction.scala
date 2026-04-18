@@ -20,25 +20,29 @@ class HaskellReformatAction extends ReformatCodeAction {
   presentation.setText("Reformat Code")
 
   override def update(actionEvent: AnActionEvent): Unit = {
-    ActionUtil.findActionContext(actionEvent).foreach(actionContext => {
-      val psiFile = actionContext.psiFile
-      if (HaskellFileUtil.isHaskellFile(psiFile)) {
-        HaskellEditorUtil.enableExternalAction(actionEvent, (project: Project) => StackProjectManager.isOrmoluAvailable(project).isDefined)
-      } else {
-        super.update(actionEvent)
-      }
-    })
+    ActionUtil.findActionContext(actionEvent) match {
+      case Some(actionContext) =>
+        val psiFile = actionContext.psiFile
+        if (HaskellFileUtil.isHaskellFile(psiFile)) {
+          HaskellEditorUtil.enableExternalAction(actionEvent, (project: Project) => StackProjectManager.isOrmoluAvailable(project).isDefined)
+        } else {
+          super.update(actionEvent)
+        }
+      case None =>
+    }
   }
 
   override def actionPerformed(actionEvent: AnActionEvent): Unit = {
-    ActionUtil.findActionContext(actionEvent).foreach(actionContext => {
-      val psiFile = actionContext.psiFile
-      if (HaskellFileUtil.isHaskellFile(psiFile)) {
-        OrmoluReformatAction.reformat(psiFile)
-      } else {
-        super.actionPerformed(actionEvent)
-      }
-    })
+    ActionUtil.findActionContext(actionEvent) match {
+      case Some(actionContext) =>
+        val psiFile = actionContext.psiFile
+        if (HaskellFileUtil.isHaskellFile(psiFile)) {
+          OrmoluReformatAction.reformat(psiFile)
+        } else {
+          super.actionPerformed(actionEvent)
+        }
+      case None =>
+    }
   }
 }
 
