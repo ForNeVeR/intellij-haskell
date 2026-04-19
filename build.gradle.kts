@@ -50,14 +50,15 @@ dependencies {
     implementation(libs.directories)
     implementation(libs.fastparse)
 
-    implementation(project(":core"))
-    implementation(project(":stack"))
-
     testImplementation(libs.scalatest)
     testImplementation(libs.scalatestplus.junit)
 
     intellijPlatform {
         intellijIdea(libs.versions.intellij.platform)
+
+        pluginComposedModule(implementation(project(":core")))
+        pluginComposedModule(implementation(project(":stack")))
+
         testFramework(TestFrameworkType.Bundled)
         testFramework(TestFrameworkType.Platform)
     }
