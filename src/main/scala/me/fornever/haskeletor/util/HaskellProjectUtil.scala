@@ -17,6 +17,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.{PsiElement, PsiFile}
 import com.intellij.util.PathUtilRt
 import me.fornever.haskeletor.GlobalInfo
+import me.fornever.haskeletor.core.project.GhcVersion
 import me.fornever.haskeletor.external.component.HaskellComponentsManager
 import me.fornever.haskeletor.module.HaskellModuleType
 import me.fornever.haskeletor.sdk.HaskellSdkType

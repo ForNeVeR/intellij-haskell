@@ -53,7 +53,7 @@ class BuildHoogleDbAction extends AnAction {
 private class HoogleInstallationManagerImpl(project: Project) extends HoogleInstallationManager {
 
   override def findHooglePath(): Optional[Path] =
-    Optional.ofNullable(StackProjectManager.isHoogleAvailable(project).orNull)
+    Optional.ofNullable(StackProjectManager.isHoogleAvailable(project).map(Path.of(_)).orNull)
   override def getHoogleDatabasePath(project: Project): Path =
     HoogleComponent.hoogleDbPath(project).toPath
   override def setHaddockBuilding(building: Boolean): Unit =

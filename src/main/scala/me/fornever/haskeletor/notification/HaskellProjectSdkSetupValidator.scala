@@ -19,6 +19,7 @@ import com.intellij.psi.PsiManager
 import com.intellij.ui.EditorNotificationPanel
 import me.fornever.haskeletor.HaskellLanguage
 import me.fornever.haskeletor.sdk.HaskellSdkType
+import me.fornever.haskeletor.util.HaskellProjectUtil
 
 object HaskellProjectSdkSetupValidator {
   final val Instance = new HaskellProjectSdkSetupValidator
