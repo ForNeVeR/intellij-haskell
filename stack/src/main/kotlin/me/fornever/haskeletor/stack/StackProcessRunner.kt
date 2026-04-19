@@ -20,6 +20,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.components.serviceAsync
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.*
 import org.jetbrains.annotations.Nls
@@ -32,7 +33,7 @@ internal class StackProcessRunner(private val project: Project) {
 
     companion object {
         @JvmStatic
-        fun getInstance(project: Project): StackProcessRunner = project.service()
+        suspend fun getInstance(project: Project): StackProcessRunner = project.serviceAsync()
     }
 
     private val buildIdStorage = AtomicInteger()
@@ -41,7 +42,7 @@ internal class StackProcessRunner(private val project: Project) {
         title: @Nls(capitalization = Nls.Capitalization.Title) String,
         stackExecutable: Path,
         workingDirectory: Path,
-        arguments: List<String>
+        arguments: Sequence<String>
     ): Boolean {
         val buildId = buildIdStorage.getAndIncrement()
         val buildDescriptor = DefaultBuildDescriptor(
@@ -56,7 +57,7 @@ internal class StackProcessRunner(private val project: Project) {
             val commandLine = GeneralCommandLine()
                 .withExePath(stackExecutable.pathString)
                 .withWorkDirectory(workingDirectory.pathString)
-                .withParameters(arguments)
+                .withParameters(arguments.toList())
             val handler = withContext(Dispatchers.IO) {
                 OSProcessHandler(commandLine).apply {
                     buildView.attachToProcess(this)
