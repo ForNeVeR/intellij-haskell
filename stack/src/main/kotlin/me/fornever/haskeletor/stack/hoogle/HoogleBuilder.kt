@@ -56,7 +56,7 @@ class HoogleBuilder(private val project: Project, private val coroutineScope: Co
                     HaskeletorBundle.message("build.haddock.title"),
                     stackExecutable,
                     getDefaultWorkingDir(),
-                    listOf("haddock", "--test", "--no-run-tests", "--no-haddock-hyperlink-source")
+                    sequenceOf("haddock", "--test", "--no-run-tests", "--no-haddock-hyperlink-source")
                 )
         } finally {
             manager.setHaddockBuilding(false) // TODO: Technically a race condition: concurrent Haddock builds will wreak havoc.
@@ -76,7 +76,7 @@ class HoogleBuilder(private val project: Project, private val coroutineScope: Co
                     HaskeletorBundle.message("build.hoogle-database.title"),
                     stackExecutable,
                     getDefaultWorkingDir(),
-                    listOf(
+                    sequenceOf(
                         hooglePath.pathString,
                         "generate",
                         "--local=${projectInfo.localDocRoot()}",

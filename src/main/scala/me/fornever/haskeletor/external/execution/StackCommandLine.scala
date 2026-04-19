@@ -13,13 +13,11 @@ import com.intellij.execution.process._
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.util.WaitFor
 import me.fornever.haskeletor.core.HaskeletorBundle
 import me.fornever.haskeletor.core.notifications.HaskellNotificationGroup
 import me.fornever.haskeletor.sdk.HaskellSdkType
 import me.fornever.haskeletor.settings.HaskellSettingsState
 import me.fornever.haskeletor.stackyaml.StackYamlComponent
-import me.fornever.haskeletor.util.HaskellProjectUtil
 import org.jetbrains.annotations.Nls
 
 import scala.jdk.CollectionConverters._
@@ -120,32 +118,7 @@ object StackCommandLine {
     run(project, arguments, -1, logOutput = true, notifyBalloonError = true, enableExtraArguments = false)
   }
 
-  def buildProjectDependenciesInMessageView(project: Project): Option[Boolean] = {
-    buildInMessageView(project, "Build project dependencies", Seq("--test", "--bench", "--no-run-tests", "--no-run-benchmarks", "--only-dependencies"))
-  }
-
-  private def ghcOptions(project: Project) = {
-    if (HaskellProjectUtil.setNoDiagnosticsShowCaretFlag(project)) {
-      Seq("--ghc-options", NoDiagnosticsShowCaretFlag)
-    } else {
-      Seq()
-    }
-  }
-
   def buildInBackground(project: Project, arguments: Seq[String]): Option[Boolean] = {
     run(project, Seq("build", "--fast") ++ arguments).map(_.getExitCode == 0)
-  }
-
-  def buildInMessageView(project: Project, description: String, arguments: Seq[String]): Option[Boolean] = {
-    executeStackCommandInBuildView(project, description, Seq("build", "--fast", "--progress-bar", "full", "--no-interleaved-output") ++ arguments ++ ghcOptions(project))
-  }
-
-  // To prevent message window is not yet available
-  private def waitForProjectIsInitialized(project: Project): WaitFor = {
-    new WaitFor(5000, 1) {
-      override def condition(): Boolean = {
-        project.isInitialized
-      }
-    }
   }
 }

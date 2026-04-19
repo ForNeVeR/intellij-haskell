@@ -15,8 +15,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.util.WaitFor
-import external.HLintRefactoringsParser
-import external.HLintRefactoringsParser._
+import me.fornever.haskeletor.core.notifications.HaskellNotificationGroup
+import me.fornever.haskeletor.external.component.HLintRefactoringsParser._
+import me.fornever.haskeletor.external.component.{HLintComponent, HLintInfo, HLintRefactoringsParser}
 import me.fornever.haskeletor.util._
 
 import scala.concurrent.duration._

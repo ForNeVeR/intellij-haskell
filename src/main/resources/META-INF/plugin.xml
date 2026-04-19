@@ -181,8 +181,6 @@
 
         <!-- Stack -->
         <sdkType implementation="me.fornever.haskeletor.sdk.HaskellSdkType"/>
-        <projectImportProvider implementation="me.fornever.haskeletor.module.StackProjectImportProvider"/>
-        <projectImportBuilder implementation="me.fornever.haskeletor.module.StackProjectImportBuilder"/>
         <projectOpenProcessor implementation="me.fornever.haskeletor.module.StackProjectOpenProcessor"/>
 
         <!-- Index -->
