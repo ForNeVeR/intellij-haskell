@@ -8,7 +8,7 @@
 
 package me.fornever.haskeletor.stack
 
-import com.intellij.build.BuildView
+import com.intellij.build.BuildProgressListener
 import com.intellij.build.FilePosition
 import com.intellij.build.events.FileMessageEvent
 import com.intellij.build.events.MessageEvent
@@ -23,7 +23,7 @@ import me.fornever.haskeletor.core.compiler.HaskellCompilationResultHelper
 import scala.Some
 import java.util.concurrent.LinkedBlockingDeque
 
-class BuildViewProcessAdapter(private val buildView: BuildView, private val buildId: Int) : ProcessListener {
+class BuildViewProcessAdapter(private val buildListener: BuildProgressListener, private val buildId: Int) : ProcessListener {
 
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
     private val previousMessageLines = LinkedBlockingDeque<String>()
@@ -100,32 +100,32 @@ class BuildViewProcessAdapter(private val buildView: BuildView, private val buil
     }
 
     private fun onGlobalError(text: @NlsSafe String) {
-        buildView.onEvent(
+        buildListener.onEvent(
             buildId,
             MessageEvent.builder(
                 text,
                 MessageEvent.Kind.ERROR
-            ).build()
+            ).withParentId(buildId).build()
         )
     }
 
     private fun onGlobalInfo(text: @NlsSafe String) {
-        buildView.onEvent(
+        buildListener.onEvent(
             buildId,
             MessageEvent.builder(
                 text,
                 MessageEvent.Kind.INFO
-            ).build()
+            ).withParentId(buildId).build()
         )
     }
 
     private fun onGlobalWarning(text: @NlsSafe String) {
-        buildView.onEvent(
+        buildListener.onEvent(
             buildId,
             MessageEvent.builder(
                 text,
                 MessageEvent.Kind.WARNING
-            ).build()
+            ).withParentId(buildId).build()
         )
     }
 
@@ -134,17 +134,17 @@ class BuildViewProcessAdapter(private val buildView: BuildView, private val buil
             message(),
             kind,
             FilePosition(filePath().toFile(), columnNr(), lineNr())
-        ).build()
+        ).withParentId(buildId).build()
 
     private fun onFileWarning(problem: CompilationProblem) {
-        buildView.onEvent(
+        buildListener.onEvent(
             buildId,
             problem.toFileMessageEvent(MessageEvent.Kind.WARNING)
         )
     }
 
     private fun onFileError(problem: CompilationProblem) {
-        buildView.onEvent(
+        buildListener.onEvent(
             buildId,
             problem.toFileMessageEvent(MessageEvent.Kind.ERROR)
         )

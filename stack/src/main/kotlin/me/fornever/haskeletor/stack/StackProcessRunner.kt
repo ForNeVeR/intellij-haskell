@@ -6,7 +6,7 @@
 
 package me.fornever.haskeletor.stack
 
-import com.intellij.build.BuildView
+import com.intellij.build.BuildProgressListener
 import com.intellij.build.BuildViewManager
 import com.intellij.build.DefaultBuildDescriptor
 import com.intellij.build.events.FinishBuildEvent
@@ -49,7 +49,9 @@ internal class StackProcessRunner(private val project: Project) {
             workingDirectory.pathString,
             System.currentTimeMillis()
         )
-        val buildView = BuildView(project, buildDescriptor, null, project.service<BuildViewManager>())
+        val buildViewManager = project.service<BuildViewManager>()
+
+        onBuildStarted(buildViewManager, buildId, buildDescriptor)
 
         try {
             val commandLine = GeneralCommandLine()
@@ -59,8 +61,7 @@ internal class StackProcessRunner(private val project: Project) {
             val exitCode = withContext(Dispatchers.IO) {
                 suspendCancellableCoroutine { continuation ->
                     OSProcessHandler(commandLine).apply {
-                        buildView.attachToProcess(this)
-                        addProcessListener(BuildViewProcessAdapter(buildView, buildId))
+                        addProcessListener(BuildViewProcessAdapter(buildViewManager, buildId))
                         addProcessListener(object : ProcessListener {
                             override fun processNotStarted() {
                                 continuation.resumeWith(Result.failure(RuntimeException("Process not started")))
@@ -79,24 +80,22 @@ internal class StackProcessRunner(private val project: Project) {
                 }
             }
 
-            onBuildStarted(buildView, buildId, buildDescriptor)
-
             if (exitCode == 0) {
-                onBuildSucceeded(buildView, buildId)
+                onBuildSucceeded(buildViewManager, buildId)
                 return true
             } else {
-                onBuildFailed(buildView, buildId, exitCode)
+                onBuildFailed(buildViewManager, buildId, exitCode)
                 return false
             }
         } catch (ex: CancellationException) {
-            onBuildCancelled(buildView, buildId)
+            onBuildCancelled(buildViewManager, buildId)
             throw ex
         }
     }
 }
 
-private fun onBuildStarted(buildView: BuildView, buildId: Int, buildDescriptor: DefaultBuildDescriptor) {
-    buildView.onEvent(
+private fun onBuildStarted(listener: BuildProgressListener, buildId: Int, buildDescriptor: DefaultBuildDescriptor) {
+    listener.onEvent(
         buildId,
         StartBuildEvent.builder(
             "Build started", // TODO: Localize this
@@ -105,8 +104,8 @@ private fun onBuildStarted(buildView: BuildView, buildId: Int, buildDescriptor: 
     )
 }
 
-private fun onBuildCancelled(buildView: BuildView, buildId: Int) {
-    buildView.onEvent(
+private fun onBuildCancelled(listener: BuildProgressListener, buildId: Int) {
+    listener.onEvent(
         buildId,
         FinishBuildEvent.builder(
             buildId,
@@ -116,8 +115,8 @@ private fun onBuildCancelled(buildView: BuildView, buildId: Int) {
     )
 }
 
-private fun onBuildSucceeded(buildView: BuildView, buildId: Int) {
-    buildView.onEvent(
+private fun onBuildSucceeded(listener: BuildProgressListener, buildId: Int) {
+    listener.onEvent(
         buildId,
         FinishBuildEvent.builder(
             buildId,
@@ -127,8 +126,8 @@ private fun onBuildSucceeded(buildView: BuildView, buildId: Int) {
     )
 }
 
-private fun onBuildFailed(buildView: BuildView, buildId: Int, exitCode: Int) {
-    buildView.onEvent(
+private fun onBuildFailed(listener: BuildProgressListener, buildId: Int, exitCode: Int) {
+    listener.onEvent(
         buildId,
         FinishBuildEvent.builder(
             buildId,
