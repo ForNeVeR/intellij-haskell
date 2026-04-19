@@ -13,6 +13,7 @@ import com.intellij.refactoring.move.moveFilesOrDirectories.MoveFileHandler
 import com.intellij.usageView.UsageInfo
 import me.fornever.haskeletor.HaskellFile
 import me.fornever.haskeletor.annotator.HaskellAnnotator
+import me.fornever.haskeletor.external.component.HaskellComponentsManager
 import me.fornever.haskeletor.psi.HaskellPsiUtil
 
 import java.util

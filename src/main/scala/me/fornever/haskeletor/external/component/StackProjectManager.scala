@@ -28,7 +28,7 @@ import me.fornever.haskeletor.external.execution.StackCommandLine
 import me.fornever.haskeletor.external.execution.StackCommandLine.NoDiagnosticsShowCaretFlag
 import me.fornever.haskeletor.external.repl.StackRepl.LibType
 import me.fornever.haskeletor.external.repl.StackReplsManager
-import me.fornever.haskeletor.module.HaskellModuleBuilder
+import me.fornever.haskeletor.module.{HaskellModuleBuilder, StackProjectModelSupport}
 import me.fornever.haskeletor.notification.ConfigFileWatcher
 import me.fornever.haskeletor.psi.HaskellPsiExtensions._
 import me.fornever.haskeletor.psi.HaskellPsiUtil
@@ -219,7 +219,7 @@ object StackProjectManager {
                   progressIndicator.setText("Busy updating project and module settings")
                   val projectPath = project.getBasePath
                   val projectModules = HaskellProjectUtil.findProjectHaskellModules(project)
-                  val packagePaths = StackProjectImportBuilder.getPackagePaths(project)
+                  val packagePaths = StackProjectModelSupport.getPackagePaths(project)
                   val packagePathsToAdd = packagePaths.filterNot { relativePath =>
                     val moduleDirectory = HaskellModuleBuilder.getModuleRootDirectory(relativePath, projectPath)
                     projectModules.exists(m => HaskellProjectUtil.getModuleDir(m) == moduleDirectory)
@@ -228,7 +228,7 @@ object StackProjectManager {
                   packagePathsToAdd.foreach(p => {
                     val packagePath = new File(projectPath, p)
                     if (packagePath.exists()) {
-                      StackProjectImportBuilder.addHaskellModule(project, p, projectPath)
+                      StackProjectModelSupport.addHaskellModule(project, p, projectPath)
                     } else {
                       HaskellNotificationGroup.warningEvent(project, s"Couldn't add package $p as module, because its absolute path ${packagePath.getAbsolutePath} doesn't exist.")
                     }

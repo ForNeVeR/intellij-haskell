@@ -25,8 +25,10 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.platform.templates.TemplateModuleBuilder
+import com.intellij.util.ui.JBUI
 import me.fornever.haskeletor.GlobalInfo
 import me.fornever.haskeletor.cabal.PackageInfo
+import me.fornever.haskeletor.core.HaskeletorBundle
 import me.fornever.haskeletor.core.notifications.HaskellNotificationGroup
 import me.fornever.haskeletor.external.component.{HaskellComponentsManager, LibraryPackageInfo}
 import me.fornever.haskeletor.external.execution.{CommandLine, StackCommandLine}
@@ -36,9 +38,10 @@ import me.fornever.haskeletor.settings.HaskellSettingsState
 import me.fornever.haskeletor.stackyaml.StackYamlComponent
 import me.fornever.haskeletor.util.{FutureUtil, HaskellFileUtil, HaskellProjectUtil, ScalaUtil}
 
+import java.awt.{GridBagConstraints, GridBagLayout}
 import java.io.File
 import java.nio.file.Path
-import javax.swing.Icon
+import javax.swing._
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
@@ -178,7 +181,6 @@ class HaskellModuleWizardStep(wizardContext: WizardContext, haskellModuleBuilder
   private val sdkChooser = new SdkComboBox(sdkModel)
 
   override def updateDataModel(): Unit = {
-    super.updateDataModel()
     haskellModuleBuilder.setModuleJdk(sdkChooser.getSelectedSdk)
   }
 
@@ -189,6 +191,44 @@ class HaskellModuleWizardStep(wizardContext: WizardContext, haskellModuleBuilder
     } else {
       true
     }
+  }
+
+  override def getComponent: JComponent = {
+    val panel = new JPanel(new GridBagLayout)
+    panel.setBorder(BorderFactory.createEtchedBorder())
+    panel.add(
+      new JLabel(HaskeletorBundle.message("module-wizard.sdk-chooser.label")),
+      new GridBagConstraints(
+        0,
+        0,
+        1,
+        1,
+        0.0,
+        0.0,
+        GridBagConstraints.WEST,
+        GridBagConstraints.NONE,
+        JBUI.insetsRight(5),
+        0,
+        0)
+    )
+
+    panel.add(
+      sdkChooser,
+      new GridBagConstraints(
+        0,
+        1,
+        1,
+        1,
+        1.0,
+        0.0,
+        GridBagConstraints.WEST,
+        GridBagConstraints.HORIZONTAL,
+        JBUI.insetsTop(5),
+        0,
+        0)
+    )
+
+    panel
   }
 }
 

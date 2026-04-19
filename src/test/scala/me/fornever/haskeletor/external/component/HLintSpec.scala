@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package external
+package me.fornever.haskeletor.external.component
 
 import org.junit.runner.RunWith
 import org.scalatest.GivenWhenThen

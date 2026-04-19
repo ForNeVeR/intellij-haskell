@@ -8,6 +8,7 @@
 
 package me.fornever.haskeletor.external.execution
 
+import me.fornever.haskeletor.core.compiler.HaskellCompilationResultHelper
 import org.junit.runner.RunWith
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
