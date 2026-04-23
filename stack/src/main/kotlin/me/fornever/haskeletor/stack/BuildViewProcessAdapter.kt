@@ -131,9 +131,9 @@ class BuildViewProcessAdapter(private val buildListener: BuildProgressListener, 
 
     private fun CompilationProblem.toFileMessageEvent(kind: MessageEvent.Kind) =
         FileMessageEvent.builder(
-            message(),
+            plainMessage(),
             kind,
-            FilePosition(filePath().toFile(), columnNr(), lineNr())
+            FilePosition(filePath().toFile(), lineNr(), columnNr())
         ).withParentId(buildId).build()
 
     private fun onFileWarning(problem: CompilationProblem) {
