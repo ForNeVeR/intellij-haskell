@@ -8,6 +8,7 @@
 
 package me.fornever.haskeletor.core.compiler
 
+import com.intellij.openapi.util.NlsSafe
 import me.fornever.haskeletor.core.compiler.HaskellCompilationResultHelper.LayoutSpaceChar
 import me.fornever.haskeletor.core.util.StringUtil
 
@@ -41,6 +42,7 @@ case class CompilationResult(currentFileProblems: Iterable[CompilationProblem], 
 
 case class CompilationProblem(filePath: Path, lineNr: Int, columnNr: Int, message: String) {
 
+  @NlsSafe
   def plainMessage: String = {
     message.split("\n").mkString.replaceAll("\\s+", " ")
   }
