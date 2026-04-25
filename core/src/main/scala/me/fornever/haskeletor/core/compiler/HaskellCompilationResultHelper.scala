@@ -17,6 +17,8 @@ import java.nio.file.Path
 object HaskellCompilationResultHelper {
 
   private final val ProblemPattern = """((?:[A-Z]:\\)?[^:]+):([\d]+):([\d]+):(.+)""".r
+  // Stack status lines like "StateVar > build with ghc-9.0.2" or "Progress 0/67 StateVar > configure"
+  private final val StackStatusPattern = """.*\s>\s.*""".r
 
   final val LayoutSpaceChar = '\u00A0'
 
@@ -29,10 +31,19 @@ object HaskellCompilationResultHelper {
   }
 
   def parseErrorLine(errorLine: String): Option[CompilationProblem] = {
+    // Skip stack status lines (e.g., "StateVar > build with ghc-9.0.2")
+    if (StackStatusPattern.matches(errorLine)) {
+      return None
+    }
+
     errorLine match {
       case ProblemPattern(filePath, lineNr, columnNr, message) =>
-        val displayMessage = message.trim.replaceAll("""(\s\s\s\s+)""", "\n" + "$1")
-        Some(CompilationProblem(Path.of(filePath), lineNr.toInt, columnNr.toInt, displayMessage))
+        try {
+          val displayMessage = message.trim.replaceAll("""(\s\s\s\s+)""", "\n" + "$1")
+          Some(CompilationProblem(Path.of(filePath), lineNr.toInt, columnNr.toInt, displayMessage))
+        } catch {
+          case _: java.nio.file.InvalidPathException => None
+        }
       case _ => None
     }
   }
