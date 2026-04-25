@@ -49,12 +49,12 @@ class BuildViewProcessAdapter(private val buildListener: BuildProgressListener, 
     }
 
     private fun addToBuildView(text: String, outputType: Key<*>) {
-        val text = text.trim()
-        if (text.isNotEmpty()) {
+        val trimmed = text.trim()
+        if (trimmed.isNotEmpty()) {
             if (ProcessOutputType.isStderr(outputType)) {
-                if (text.startsWith("Error:") && text.endsWith(":")
-                    || text.startsWith("Unable to parse")
-                    || text.startsWith("Error parsing")) {
+                if (trimmed.startsWith("Error:") && trimmed.endsWith(":")
+                    || trimmed.startsWith("Unable to parse")
+                    || trimmed.startsWith("Error parsing")) {
                     globalError = true // To get also all lines after this line indicated as error AND in order
                 }
 
@@ -63,13 +63,13 @@ class BuildViewProcessAdapter(private val buildListener: BuildProgressListener, 
                     addMessage()
                 }
 
-                previousMessageLines.add(text)
-            } else if (text.startsWith("Warning:")) {
-                onGlobalWarning(text)
-            } else if (text.startsWith("Error:")) {
-                onGlobalError(text)
+                previousMessageLines.add(trimmed)
+            } else if (trimmed.startsWith("Warning:")) {
+                onGlobalWarning(trimmed)
+            } else if (trimmed.startsWith("Error:")) {
+                onGlobalError(trimmed)
             } else {
-                onGlobalInfo(text)
+                onGlobalInfo(trimmed)
             }
         }
     }
