@@ -9,6 +9,10 @@ Changelog
 
 The format is based on [Keep a Changelog v1.1.0][keep-a-changelog]. See [the README file][docs.readme] for more details on how the project is versioned.
 
+## [Unreleased] (2.0.0)
+### Removed
+- **Import Project** functionality (was tied too tightly to IntelliJ IDEA).
+
 ## [1.0.1] - 2026-04-18
 ### Fixed
 - **Show Error** action (and some otheres that relied on PSI access) has been [fixed](https://github.com/ForNeVeR/haskeletor/pull/40).
