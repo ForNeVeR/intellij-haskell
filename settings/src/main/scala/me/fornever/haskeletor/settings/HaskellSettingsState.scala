@@ -67,12 +67,20 @@ object HaskellSettingsState {
     Option.when(customTools && state.stylishHaskellPath.nonEmpty)(state.stylishHaskellPath)
   }
 
+  def stackPath: Option[String] = {
+    Option.when(state.stackPath.trim.nonEmpty)(state.stackPath.trim)
+  }
+
   def useCustomTools: Boolean = {
     state.customTools
   }
 
-  def getExtraStackArguments: Seq[String] = {
-    Option.when(state.extraStackArguments.trim.nonEmpty)(state.extraStackArguments).map(_.split("""\s+""").toSeq).getOrElse(Seq())
+  def getExtraStackArguments: java.util.List[String] = {
+    import scala.jdk.CollectionConverters._
+    Option.when(state.extraStackArguments.trim.nonEmpty)(state.extraStackArguments)
+      .map(_.split("""\s+""").toSeq)
+      .getOrElse(Seq())
+      .asJava
   }
 
   def getDefaultGhcOptions: Seq[String] = {

@@ -13,11 +13,13 @@ import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent}
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import me.fornever.haskeletor.HTool
 import me.fornever.haskeletor.core.notifications.HaskellNotificationGroup
 import me.fornever.haskeletor.external.component.StackProjectManager
 import me.fornever.haskeletor.external.execution.CommandLine
+import me.fornever.haskeletor.settings.HTool
 import me.fornever.haskeletor.util.{FutureUtil, HaskellEditorUtil, HaskellFileUtil, ScalaUtil}
+
+import java.nio.file.Path
 
 class StylishHaskellReformatAction extends AnAction {
 
@@ -36,7 +38,11 @@ object StylishHaskellReformatAction {
 
   def versionInfo(project: Project): String = {
     StackProjectManager.isStylishHaskellAvailable(project) match {
-      case Some(stylishHaskellPath) => CommandLine.run(project, stylishHaskellPath, Seq("--version")).getStdout
+      case Some(stylishHaskellPath) => CommandLine.run(
+        project,
+        Path.of(stylishHaskellPath),
+        Seq("--version")
+      ).getStdout
       case None => "-"
     }
   }
@@ -52,7 +58,7 @@ object StylishHaskellReformatAction {
           case Some(path) =>
             val processOutputFuture = ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.callable[ProcessOutput] {
               val fileCharset = HaskellFileUtil.getCharset(psiFile)
-              CommandLine.run(project, stylishHaskellPath, Seq(path), charset = fileCharset)
+              CommandLine.run(project, Path.of(stylishHaskellPath), Seq(path), charset = fileCharset)
             })
 
             FutureUtil.waitForValue(project, processOutputFuture, s"reformatting by ${HTool.StylishHaskell.name}") match {

@@ -13,11 +13,13 @@ import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent}
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import me.fornever.haskeletor.HTool
 import me.fornever.haskeletor.core.notifications.HaskellNotificationGroup
 import me.fornever.haskeletor.external.component.StackProjectManager
 import me.fornever.haskeletor.external.execution.CommandLine
+import me.fornever.haskeletor.settings.HTool
 import me.fornever.haskeletor.util._
+
+import java.nio.file.Path
 
 class OrmoluReformatAction extends AnAction {
 
@@ -45,7 +47,7 @@ object OrmoluReformatAction {
           case Some(path) =>
             val processOutputFuture = ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.callable[ProcessOutput] {
               val fileCharset = HaskellFileUtil.getCharset(psiFile)
-              CommandLine.run(project, ormoluPath, Seq(path), charset = fileCharset)
+              CommandLine.run(project, Path.of(ormoluPath), Seq(path), charset = fileCharset)
             })
 
             FutureUtil.waitForValue(project, processOutputFuture, s"reformatting by ${HTool.Ormolu.name}") match {
@@ -71,7 +73,7 @@ object OrmoluReformatAction {
 
   def versionInfo(project: Project): String = {
     StackProjectManager.isOrmoluAvailable(project) match {
-      case Some(ormoluPath) => CommandLine.run(project, ormoluPath, Seq("--version")).getStdout
+      case Some(ormoluPath) => CommandLine.run(project, Path.of(ormoluPath), Seq("--version")).getStdout
       case None => "-"
     }
   }

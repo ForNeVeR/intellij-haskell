@@ -10,38 +10,32 @@ package me.fornever.haskeletor.external.component
 
 import com.intellij.ProjectTopics
 import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.application.{ApplicationManager, WriteAction}
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.ProjectComponent
-import com.intellij.openapi.progress.{PerformInBackgroundOption, ProgressIndicator, ProgressManager, Task}
+import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.ProjectJdkTable
-import com.intellij.openapi.roots.{ModifiableRootModel, ModuleRootEvent, ModuleRootListener, ModuleRootModificationUtil}
+import com.intellij.openapi.roots.{ModuleRootEvent, ModuleRootListener}
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.{PsiTreeChangeAdapter, PsiTreeChangeEvent}
 import com.intellij.ui.EditorNotifications
-import me.fornever.haskeletor.HTool.{Hlint, Hoogle, Ormolu, StylishHaskell}
 import me.fornever.haskeletor.action.HaskellReformatAction
 import me.fornever.haskeletor.annotator.HaskellAnnotator
+import me.fornever.haskeletor.core.HaskeletorBundle
 import me.fornever.haskeletor.core.notifications.HaskellNotificationGroup
-import me.fornever.haskeletor.external.execution.StackCommandLine
-import me.fornever.haskeletor.external.execution.StackCommandLine.NoDiagnosticsShowCaretFlag
 import me.fornever.haskeletor.external.repl.StackRepl.LibType
 import me.fornever.haskeletor.external.repl.StackReplsManager
-import me.fornever.haskeletor.module.{HaskellModuleBuilder, StackProjectModelSupport}
 import me.fornever.haskeletor.notification.ConfigFileWatcher
 import me.fornever.haskeletor.psi.HaskellPsiExtensions._
 import me.fornever.haskeletor.psi.HaskellPsiUtil
 import me.fornever.haskeletor.psi.stubs.types.HaskellFileElementType
-import me.fornever.haskeletor.sdk.HaskellSdkType
-import me.fornever.haskeletor.settings.HaskellSettingsState
-import me.fornever.haskeletor.stack.StackBuilder
+import me.fornever.haskeletor.settings.HTool.{Hlint, Hoogle, Ormolu, StylishHaskell}
+import me.fornever.haskeletor.settings.{GlobalInfo, HTool, HaskellSettingsState}
+import me.fornever.haskeletor.stack.{HaskellToolInstaller, StackBuilder}
+import me.fornever.haskeletor.stackyaml.StackYamlComponent
 import me.fornever.haskeletor.util._
 import me.fornever.haskeletor.util.index.{HaskellFileIndex, HaskellModuleNameIndex}
-import me.fornever.haskeletor.{GlobalInfo, HTool}
 
-import java.io.File
-import java.nio.file.Path
 import scala.jdk.CollectionConverters.SeqHasAsJava
 
 object StackProjectManager {
@@ -84,10 +78,6 @@ object StackProjectManager {
     getStackProjectManager(project).exists(_.preloadingAllLibraryIdentifiers)
   }
 
-  def stackVersion(project: Project): Option[String] = {
-    getStackProjectManager(project).flatMap(_.stackVersion)
-  }
-
   def start(project: Project): Unit = {
     init(project)
   }
@@ -106,74 +96,61 @@ object StackProjectManager {
     getStackProjectManager(project).map(_.projectLibraryFileWatcher)
   }
 
-  def installHaskellTools(project: Project, update: Boolean): Unit = {
+  def launchInstallHaskellTools(project: Project, update: Boolean): Unit = {
     getStackProjectManager(project).foreach(_.installingHaskellTools = true)
 
-    val title = (if (update) "Updating" else "Installing") + " Haskell tools"
-
-    ProgressManager.getInstance().run(new Task.Backgroundable(project, title, true, PerformInBackgroundOption.ALWAYS_BACKGROUND) {
-
-      private def isToolAvailable(progressIndicator: ProgressIndicator, tool: HTool) = {
-        if (HaskellSettingsState.useCustomTools) {
-          tool match {
-            case Hlint => HaskellSettingsState.hlintPath
-            case Hoogle => HaskellSettingsState.hooglePath
-            case Ormolu => HaskellSettingsState.ormoluPath
-            case StylishHaskell => HaskellSettingsState.stylishHaskellPath
-          }
+    def isToolAvailable(tool: HTool) = {
+      if (HaskellSettingsState.useCustomTools) {
+        tool match {
+          case Hlint => HaskellSettingsState.hlintPath
+          case Hoogle => HaskellSettingsState.hooglePath
+          case Ormolu => HaskellSettingsState.ormoluPath
+          case StylishHaskell => HaskellSettingsState.stylishHaskellPath
+        }
+      } else {
+        if (GlobalInfo.toolPath(tool).exists()) {
+          Some(GlobalInfo.toolPath(tool).getAbsolutePath)
         } else {
-          if (!GlobalInfo.toolPath(tool).exists() || update) {
-            progressIndicator.setText(s"Busy with installing ${tool.name} in ${GlobalInfo.toolsBinPath}")
-            StackCommandLine.installTool(project, progressIndicator, tool.name)
-            if (GlobalInfo.toolPath(tool).exists()) {
-              Some(GlobalInfo.toolPath(tool).getAbsolutePath)
-            } else {
-              None
-            }
-          } else {
-            Some(GlobalInfo.toolPath(tool).getAbsolutePath)
-          }
+          None
         }
       }
+    }
 
-      /**
-        * Check if at least HLint is installed.
-        */
-      private def isHLintInstalled: Boolean = {
-        GlobalInfo.toolPath(HTool.Hlint).exists()
-      }
+    def isHLintInstalled: Boolean = {
+      GlobalInfo.toolPath(HTool.Hlint).exists()
+    }
 
-      override def run(progressIndicator: ProgressIndicator): Unit = {
-        try {
-          if (update || !isHLintInstalled) {
-            progressIndicator.setText(s"Busy with updating Stack's package index")
-            StackCommandLine.updateStackIndex(project)
-          }
+    val forceMakeChanges = update || !isHLintInstalled
+    val useSystemGhc = !StackYamlComponent.isNixEnabled(project) && HaskellSettingsState.useSystemGhc
 
-          getStackProjectManager(project).foreach(_.hlintAvailable = isToolAvailable(progressIndicator, HTool.Hlint))
+    HaskellToolInstaller.getInstance(project)
+      .launchInstallHaskellTools(
+        forceMakeChanges,
+        useSystemGhc,
+        HaskeletorBundle.message("progress.installing-tools.title"),
+        () => {
+          getStackProjectManager(project).foreach(_.hlintAvailable = isToolAvailable(HTool.Hlint))
 
-          getStackProjectManager(project).foreach(_.hoogleAvailable = isToolAvailable(progressIndicator, HTool.Hoogle))
+          getStackProjectManager(project).foreach(_.hoogleAvailable = isToolAvailable(HTool.Hoogle))
 
-          getStackProjectManager(project).foreach(_.stylishHaskellAvailable = isToolAvailable(progressIndicator, HTool.StylishHaskell))
+          getStackProjectManager(project).foreach(_.stylishHaskellAvailable = isToolAvailable(HTool.StylishHaskell))
 
-          getStackProjectManager(project).foreach(_.ormoluAvailable = isToolAvailable(progressIndicator, HTool.Ormolu))
-        } finally {
-          getStackProjectManager(project).foreach(_.installingHaskellTools = false)
-        }
-      }
-    })
+          getStackProjectManager(project).foreach(_.ormoluAvailable = isToolAvailable(HTool.Ormolu))
+        },
+        () => getStackProjectManager(project).foreach(_.installingHaskellTools = false)
+      )
   }
 
   private def ghcOptions(project: Project) = {
     if (HaskellProjectUtil.setNoDiagnosticsShowCaretFlag(project)) {
-      Seq("--ghc-options", NoDiagnosticsShowCaretFlag)
+      Seq("--ghc-options", "-fno-diagnostics-show-caret")
     } else {
       Seq()
     }
   }
 
   private def init(project: Project, restart: Boolean = false): Unit = {
-    if (HaskellProjectUtil.isValidHaskellProject(project, notifyNoSdk = true)) {
+    if (HaskellProjectUtil.isHaskellProject(project)) {
       if (isInitializing(project)) {
         HaskellNotificationGroup.logWarningBalloonEvent(project, "Action not possible whilst project is initializing")
       } else {
@@ -189,228 +166,186 @@ object StackProjectManager {
           getStackProjectManager(project).foreach(_.hoogleAvailable = None)
           getStackProjectManager(project).foreach(_.ormoluAvailable = None)
           getStackProjectManager(project).foreach(_.stylishHaskellAvailable = None)
-          installHaskellTools(project, update = false)
+          launchInstallHaskellTools(project, update = false)
         }
 
-        HaskellSdkType.getStackPath(project).foreach(stack =>
-          StackBuilder.getInstance(project).launchBuildWorkflow(
-            Path.of(stack),
-            () => HaskellComponentsManager.findStackComponentInfos(project)
-              .filter(_.stanzaType == LibType)
-              .map(_.target)
-              .asJava,
-            () => ghcOptions(project).asJava,
-            (progressIndicator: ProgressIndicator) => {
-              try {
-                if (restart) {
-                  val projectRepls = StackReplsManager.getRunningProjectRepls(project)
-                  progressIndicator.setText("Busy stopping REPLs")
-                  StackReplsManager.getGlobalRepl(project).foreach(_.exit())
-                  StackReplsManager.getGlobalRepl2(project).foreach(_.exit())
-                  projectRepls.foreach(_.exit())
+        StackBuilder.getInstance(project).launchBuildWorkflow(
+          () => HaskellComponentsManager.findStackComponentInfos(project)
+            .filter(_.stanzaType == LibType)
+            .map(_.target)
+            .asJava,
+          () => ghcOptions(project).asJava,
+          (progressIndicator: ProgressIndicator) => {
+            try {
+              if (restart) {
+                val projectRepls = StackReplsManager.getRunningProjectRepls(project)
+                progressIndicator.setText("Busy stopping REPLs")
+                StackReplsManager.getGlobalRepl(project).foreach(_.exit())
+                StackReplsManager.getGlobalRepl2(project).foreach(_.exit())
+                projectRepls.foreach(_.exit())
 
-                  progressIndicator.setText("Busy cleaning cache")
-                  HaskellComponentsManager.invalidateGlobalCaches(project)
+                progressIndicator.setText("Busy cleaning cache")
+                HaskellComponentsManager.invalidateGlobalCaches(project)
 
-                  ApplicationManager.getApplication.runReadAction(ScalaUtil.runnable {
-                    getStackProjectManager(project).foreach(_.initStackReplsManager())
-                  })
-
-                  progressIndicator.setText("Busy updating project and module settings")
-                  val projectPath = project.getBasePath
-                  val projectModules = HaskellProjectUtil.findProjectHaskellModules(project)
-                  val packagePaths = StackProjectModelSupport.getPackagePaths(project)
-                  val packagePathsToAdd = packagePaths.filterNot { relativePath =>
-                    val moduleDirectory = HaskellModuleBuilder.getModuleRootDirectory(relativePath, projectPath)
-                    projectModules.exists(m => HaskellProjectUtil.getModuleDir(m) == moduleDirectory)
-                  }
-
-                  packagePathsToAdd.foreach(p => {
-                    val packagePath = new File(projectPath, p)
-                    if (packagePath.exists()) {
-                      StackProjectModelSupport.addHaskellModule(project, p, projectPath)
-                    } else {
-                      HaskellNotificationGroup.warningEvent(project, s"Couldn't add package $p as module, because its absolute path ${packagePath.getAbsolutePath} doesn't exist.")
-                    }
-                  })
-
-                  StackReplsManager.getReplsManager(project).map(_.modulePackageInfos).foreach { moduleCabalInfos =>
-                    moduleCabalInfos.foreach { case (module, cabalInfo) =>
-                      ModuleRootModificationUtil.updateModel(module, (modifiableRootModel: ModifiableRootModel) => {
-                        modifiableRootModel.getContentEntries.headOption.foreach { contentEntry =>
-                          contentEntry.clearSourceFolders()
-                          HaskellModuleBuilder.addSourceFolders(cabalInfo, contentEntry)
-                        }
-                      })
-                    }
-                  }
-                }
-
-                val replsLoad = ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.runnable {
-                  StackReplsManager.getReplsManager(project).foreach(_.projectReplTargets.filter(_.stanzaType == LibType).foreach { info =>
-                    progressIndicator.setText("Busy starting project REPL " + info.targetsName)
-                    StackReplsManager.getProjectRepl(project, info) match {
-                      case Some(r) if r.available => HaskellNotificationGroup.logInfoEvent(project, s"REPL ${info.targetsName} is started")
-                      case _ => HaskellNotificationGroup.logWarningEvent(project, s"REPL ${info.targetsName} isn't started")
-                    }
-                    Thread.sleep(1000) // Have to wait between starting the REPLs otherwise timeouts while starting
-                  })
-
-                  val projectFiles = ApplicationUtil.runReadActionWithFileAccess(project,
-                    if (project.isDisposed) {
-                      Iterable()
-                    } else {
-                      HaskellFileIndex.findProjectHaskellFiles(project)
-                    }, "Finding project files with imported module names")
-
-                  val projectFilesWithImportedModuleNames = projectFiles match {
-                    case Right(files) => Some(files.map(pf => (pf, ApplicationUtil.runReadAction(HaskellPsiUtil.findImportDeclarations(pf), Some(project)).flatMap(id => ApplicationUtil.runReadAction(id.getModuleName, Some(project))))))
-                    case Left(_) =>
-                      HaskellNotificationGroup.logInfoEvent(project, "Couldn't retrieve project files")
-                      None
-                  }
-
-                  projectFilesWithImportedModuleNames match {
-                    case Some(fm) =>
-                      fm.foreach { case (pf, moduleNames) =>
-                        HaskellPsiUtil.findModuleName(pf).foreach(BrowseModuleComponent.findModuleIdentifiersSync(project, _))
-
-                        moduleNames.foreach(mn => HaskellModuleNameIndex.findFilesByModuleName(project, mn))
-                        HaskellNotificationGroup.logInfoEvent(project, "Loading module identifiers " + moduleNames.mkString(", "))
-                        moduleNames.foreach(mn => BrowseModuleComponent.findModuleIdentifiersSync(project, mn))
-                      }
-                    case None => HaskellNotificationGroup.logInfoEvent(project, "Couldn't load module identifiers due to timeout")
-                  }
+                ApplicationManager.getApplication.runReadAction(ScalaUtil.runnable {
+                  getStackProjectManager(project).foreach(_.initStackReplsManager())
                 })
-
-                progressIndicator.setText("Busy starting global Stack REPL")
-                StackReplsManager.getGlobalRepl(project)
-
-                progressIndicator.setText("Busy starting global Stack REPL2")
-                StackReplsManager.getGlobalRepl2(project)
-
-                progressIndicator.setText("Busy preloading global project info")
-                GlobalProjectInfoComponent.findGlobalProjectInfo(project)
-
-                progressIndicator.setText("Busy preloading library packages info")
-                LibraryPackageInfoComponent.preloadLibraryPackageInfos(project)
-
-                progressIndicator.setText("Busy preloading Stack component info cache")
-                val preloadStackComponentInfoCache = ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.callable {
-                  HaskellComponentsManager.preloadStackComponentInfoCache(project)
-                })
-
-                val preloadLibraryFilesCacheFuture = ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.runnable {
-                  if (!project.isDisposed) {
-                    progressIndicator.setText("Busy downloading library sources")
-                    HaskellModuleBuilder.addLibrarySources(project, update = restart)
-
-                    HaskellComponentsManager.preloadLibraryFilesCache(project)
-                  }
-                })
-
-                progressIndicator.setText("Busy preloading library identifiers")
-                val preloadLibraryIdentifiersCacheFuture = ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.runnable {
-                  if (!project.isDisposed) {
-                    HaskellComponentsManager.preloadLibraryIdentifiersCaches(project)
-                  }
-                })
-
-                progressIndicator.setText("Busy preloading all library identifiers")
-                ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.runnable {
-                  if (!project.isDisposed) {
-                    getStackProjectManager(project).foreach(_.preloadingAllLibraryIdentifiers = true)
-                    try {
-                      HaskellComponentsManager.preloadAllLibraryIdentifiersCaches(project)
-
-                      if (!project.isDisposed) {
-                        HaskellNotificationGroup.logInfoEvent(project, "Restarting global REPL to release memory")
-                        StackReplsManager.getGlobalRepl(project).foreach(_.restart())
-                      }
-                    } finally {
-                      getStackProjectManager(project).foreach(_.preloadingAllLibraryIdentifiers = false)
-                    }
-                  }
-                })
-
-                if (!project.isDisposed) {
-                  val messageBus = project.getMessageBus
-                  val notifications = EditorNotifications.getInstance(project)
-                  messageBus.connect().subscribe(VirtualFileManager.VFS_CHANGES, new ConfigFileWatcher(project, notifications))
-
-
-                  messageBus.connect().subscribe(ProjectTopics.PROJECT_ROOTS, new ModuleRootListener() {
-                    override def rootsChanged(event: ModuleRootEvent): Unit = {
-                      notifications.updateAllNotifications()
-                    }
-                  })
-
-                  getStackProjectManager(project).map(_.projectLibraryFileWatcher).foreach { watcher =>
-                    messageBus.connect().subscribe(VirtualFileManager.VFS_CHANGES, watcher)
-                  }
-                }
-
-                HaskellPsiUtil.getPsiManager(project).foreach(_.addPsiTreeChangeListener(new PsiTreeChangeAdapter {
-
-                  private def invalidateInfo(event: PsiTreeChangeEvent): Unit = {
-                    if (Option(event.getParent).flatMap(p => Option(p.getNode)).exists(_.getElementType != HaskellFileElementType.Instance) || Option(event.getNewChild).isDefined) {
-                      Option(event.getFile).foreach(f => {
-                        if (Option(event.getNewChild).orElse(Option(event.getParent)).flatMap(HaskellPsiUtil.findImportDeclarations).isDefined) {
-                          // Have to refresh because import declarations can be changed
-                          FileModuleIdentifiers.refresh(f)
-                        }
-                      })
-                    }
-                  }
-
-                  override def childReplaced(event: PsiTreeChangeEvent): Unit = {
-                    invalidateInfo(event)
-                  }
-
-                  override def childrenChanged(event: PsiTreeChangeEvent): Unit = {
-                    invalidateInfo(event)
-                  }
-
-                  override def childRemoved(event: PsiTreeChangeEvent): Unit = {
-                    invalidateInfo(event)
-                  }
-                }))
-
-                progressIndicator.setText("Busy preloading caches")
-                if (!preloadLibraryFilesCacheFuture.isDone || !preloadStackComponentInfoCache.isDone || !preloadLibraryIdentifiersCacheFuture.isDone || !replsLoad.isDone) {
-                  FutureUtil.waitForValue(project, preloadStackComponentInfoCache, "preloading project cache", 600)
-                  FutureUtil.waitForValue(project, preloadLibraryFilesCacheFuture, "preloading library files caches", 600)
-                  FutureUtil.waitForValue(project, preloadLibraryIdentifiersCacheFuture, "preloading library identifiers caches", 600)
-                  FutureUtil.waitForValue(project, replsLoad, "starting and loading REPLs", 600)
-                }
-              } finally {
-                getStackProjectManager(project).foreach(_.initializing = false)
               }
 
-              // Force-load the module in REPL when REPL can be started. IntelliJ could have wanted to load file (via HaskellAnnotator)
-              // but the REPL couldn't be started yet.
-              HaskellAnnotator.getNotLoadedFiles(project) foreach { psiFile =>
-                HaskellNotificationGroup.logInfoEvent(project, s"${psiFile.getName} will be force-loaded")
-                HaskellAnnotator.restartDaemonCodeAnalyzerForFile(psiFile)
-              }
+              val replsLoad = ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.runnable {
+                StackReplsManager.getReplsManager(project).foreach(_.projectReplTargets.filter(_.stanzaType == LibType).foreach { info =>
+                  progressIndicator.setText("Busy starting project REPL " + info.targetsName)
+                  StackReplsManager.getProjectRepl(project, info) match {
+                    case Some(r) if r.available => HaskellNotificationGroup.logInfoEvent(project, s"REPL ${info.targetsName} is started")
+                    case _ => HaskellNotificationGroup.logWarningEvent(project, s"REPL ${info.targetsName} isn't started")
+                  }
+                  Thread.sleep(1000) // Have to wait between starting the REPLs otherwise timeouts while starting
+                })
 
-              if (!HoogleComponent.doesHoogleDatabaseExist(project)) {
-                HoogleComponent.showHoogleDatabaseDoesNotExistNotification(project)
-              }
+                val projectFiles = ApplicationUtil.runReadActionWithFileAccess(project,
+                  if (project.isDisposed) {
+                    Iterable()
+                  } else {
+                    HaskellFileIndex.findProjectHaskellFiles(project)
+                  }, "Finding project files with imported module names")
 
-              StackReplsManager.getReplsManager(project).foreach(_.modulePackageInfos.foreach { case (module, cabalInfo) =>
-                val intersection = cabalInfo.sourceRoots.toSeq.intersect(cabalInfo.testSourceRoots.toSeq)
-                if (intersection.nonEmpty) {
-                  intersection.foreach(p => {
-                    val moduleName = module.getName
-                    HaskellNotificationGroup.logWarningBalloonEvent(project, s"Source folder `$p` of module `$moduleName` is defined both as Source and Test Source")
-                  })
+                val projectFilesWithImportedModuleNames = projectFiles match {
+                  case Right(files) => Some(files.map(pf => (pf, ApplicationUtil.runReadAction(HaskellPsiUtil.findImportDeclarations(pf), Some(project)).flatMap(id => ApplicationUtil.runReadAction(id.getModuleName, Some(project))))))
+                  case Left(_) =>
+                    HaskellNotificationGroup.logInfoEvent(project, "Couldn't retrieve project files")
+                    None
+                }
+
+                projectFilesWithImportedModuleNames match {
+                  case Some(fm) =>
+                    fm.foreach { case (pf, moduleNames) =>
+                      HaskellPsiUtil.findModuleName(pf).foreach(BrowseModuleComponent.findModuleIdentifiersSync(project, _))
+
+                      moduleNames.foreach(mn => HaskellModuleNameIndex.findFilesByModuleName(project, mn))
+                      HaskellNotificationGroup.logInfoEvent(project, "Loading module identifiers " + moduleNames.mkString(", "))
+                      moduleNames.foreach(mn => BrowseModuleComponent.findModuleIdentifiersSync(project, mn))
+                    }
+                  case None => HaskellNotificationGroup.logInfoEvent(project, "Couldn't load module identifiers due to timeout")
                 }
               })
-              HaskellNotificationGroup.logInfoEvent(project, "Finished initializing Haskell project")
 
-              kotlin.Unit.INSTANCE
+              progressIndicator.setText("Busy starting global Stack REPL")
+              StackReplsManager.getGlobalRepl(project)
+
+              progressIndicator.setText("Busy starting global Stack REPL2")
+              StackReplsManager.getGlobalRepl2(project)
+
+              progressIndicator.setText("Busy preloading global project info")
+              GlobalProjectInfoComponent.findGlobalProjectInfo(project)
+
+              progressIndicator.setText("Busy preloading library packages info")
+              LibraryPackageInfoComponent.preloadLibraryPackageInfos(project)
+
+              progressIndicator.setText("Busy preloading Stack component info cache")
+              val preloadStackComponentInfoCache = ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.callable {
+                HaskellComponentsManager.preloadStackComponentInfoCache(project)
+              })
+
+              progressIndicator.setText("Busy preloading library identifiers")
+              val preloadLibraryIdentifiersCacheFuture = ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.runnable {
+                if (!project.isDisposed) {
+                  HaskellComponentsManager.preloadLibraryIdentifiersCaches(project)
+                }
+              })
+
+              progressIndicator.setText("Busy preloading all library identifiers")
+              ApplicationManager.getApplication.executeOnPooledThread(ScalaUtil.runnable {
+                if (!project.isDisposed) {
+                  getStackProjectManager(project).foreach(_.preloadingAllLibraryIdentifiers = true)
+                  try {
+                    HaskellComponentsManager.preloadAllLibraryIdentifiersCaches(project)
+
+                    if (!project.isDisposed) {
+                      HaskellNotificationGroup.logInfoEvent(project, "Restarting global REPL to release memory")
+                      StackReplsManager.getGlobalRepl(project).foreach(_.restart())
+                    }
+                  } finally {
+                    getStackProjectManager(project).foreach(_.preloadingAllLibraryIdentifiers = false)
+                  }
+                }
+              })
+
+              if (!project.isDisposed) {
+                val messageBus = project.getMessageBus
+                val notifications = EditorNotifications.getInstance(project)
+                messageBus.connect().subscribe(VirtualFileManager.VFS_CHANGES, new ConfigFileWatcher(project, notifications))
+
+
+                messageBus.connect().subscribe(ProjectTopics.PROJECT_ROOTS, new ModuleRootListener() {
+                  override def rootsChanged(event: ModuleRootEvent): Unit = {
+                    notifications.updateAllNotifications()
+                  }
+                })
+
+                getStackProjectManager(project).map(_.projectLibraryFileWatcher).foreach { watcher =>
+                  messageBus.connect().subscribe(VirtualFileManager.VFS_CHANGES, watcher)
+                }
+              }
+
+              HaskellPsiUtil.getPsiManager(project).foreach(_.addPsiTreeChangeListener(new PsiTreeChangeAdapter {
+
+                private def invalidateInfo(event: PsiTreeChangeEvent): Unit = {
+                  if (Option(event.getParent).flatMap(p => Option(p.getNode)).exists(_.getElementType != HaskellFileElementType.Instance) || Option(event.getNewChild).isDefined) {
+                    Option(event.getFile).foreach(f => {
+                      if (Option(event.getNewChild).orElse(Option(event.getParent)).flatMap(HaskellPsiUtil.findImportDeclarations).isDefined) {
+                        // Have to refresh because import declarations can be changed
+                        FileModuleIdentifiers.refresh(f)
+                      }
+                    })
+                  }
+                }
+
+                override def childReplaced(event: PsiTreeChangeEvent): Unit = {
+                  invalidateInfo(event)
+                }
+
+                override def childrenChanged(event: PsiTreeChangeEvent): Unit = {
+                  invalidateInfo(event)
+                }
+
+                override def childRemoved(event: PsiTreeChangeEvent): Unit = {
+                  invalidateInfo(event)
+                }
+              }))
+
+              progressIndicator.setText("Busy preloading caches")
+              if (!preloadStackComponentInfoCache.isDone || !preloadLibraryIdentifiersCacheFuture.isDone || !replsLoad.isDone) {
+                FutureUtil.waitForValue(project, preloadStackComponentInfoCache, "preloading project cache", 600)
+                FutureUtil.waitForValue(project, preloadLibraryIdentifiersCacheFuture, "preloading library identifiers caches", 600)
+                FutureUtil.waitForValue(project, replsLoad, "starting and loading REPLs", 600)
+              }
+            } finally {
+              getStackProjectManager(project).foreach(_.initializing = false)
+            }
+
+            // Force-load the module in REPL when REPL can be started. IntelliJ could have wanted to load file (via HaskellAnnotator)
+            // but the REPL couldn't be started yet.
+            HaskellAnnotator.getNotLoadedFiles(project) foreach { psiFile =>
+              HaskellNotificationGroup.logInfoEvent(project, s"${psiFile.getName} will be force-loaded")
+              HaskellAnnotator.restartDaemonCodeAnalyzerForFile(psiFile)
+            }
+
+            if (!HoogleComponent.doesHoogleDatabaseExist(project)) {
+              HoogleComponent.showHoogleDatabaseDoesNotExistNotification(project)
+            }
+
+            StackReplsManager.getReplsManager(project).foreach(_.modulePackageInfos.foreach { case (cabalInfo) =>
+              val intersection = cabalInfo.sourceRoots.toSeq.intersect(cabalInfo.testSourceRoots.toSeq)
+              if (intersection.nonEmpty) {
+                intersection.foreach(p => {
+                  HaskellNotificationGroup.logWarningBalloonEvent(project, s"Source folder `$p` is defined both as Source and Test Source")
+                })
+              }
             })
+            HaskellNotificationGroup.logInfoEvent(project, "Finished initializing Haskell project")
+
+            kotlin.Unit.INSTANCE
+          }
         )
       }
     }
@@ -450,8 +385,6 @@ class StackProjectManager(project: Project) extends ProjectComponent {
 
   private val projectLibraryFileWatcher = new ProjectLibraryFileWatcher(project)
 
-  private lazy val stackVersion = StackCommandLine.stackVersion(project)
-
   def getStackReplsManager: Option[StackReplsManager] = {
     replsManager
   }
@@ -475,8 +408,6 @@ class StackProjectManager(project: Project) extends ProjectComponent {
     if (HaskellProjectUtil.isHaskellProject(project)) {
       disableDefaultReformatAction()
 
-      fixSdkStackVersion()
-
       initStackReplsManager()
       if (replsManager.exists(_.componentTargets.isEmpty)) {
         Messages.showErrorDialog(project, s"Can't start project as no Cabal file was found (or could not be read)", "Can't start project")
@@ -493,17 +424,5 @@ class StackProjectManager(project: Project) extends ProjectComponent {
     // Overriding IntelliJ's default shortcut for formatting
     actionManager.unregisterAction("ReformatCode")
     actionManager.registerAction("ReformatCode", new HaskellReformatAction)
-  }
-
-  // Makes sure that after Stack is updated the right version is displayed.
-  private def fixSdkStackVersion(): Unit = {
-    val sdks = ProjectJdkTable.getInstance.getSdksOfType(HaskellSdkType.getInstance)
-    sdks.forEach { sdk =>
-      WriteAction.run(() => {
-        val sdkModificator = sdk.getSdkModificator
-        sdkModificator.setVersionString(HaskellSdkType.getInstance.getVersionString(sdk))
-        sdkModificator.commitChanges()
-      })
-    }
   }
 }

@@ -10,13 +10,14 @@ package me.fornever.haskeletor.external.component
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import me.fornever.haskeletor.HTool
 import me.fornever.haskeletor.core.notifications.HaskellNotificationGroup
 import me.fornever.haskeletor.external.execution.CommandLine
-import me.fornever.haskeletor.settings.HaskellSettingsState
+import me.fornever.haskeletor.settings.{HTool, HaskellSettingsState}
 import me.fornever.haskeletor.util.HaskellFileUtil
 import spray.json.JsonParser.ParsingException
 import spray.json._
+
+import java.nio.file.Path
 
 object HLintComponent {
 
@@ -52,7 +53,7 @@ object HLintComponent {
   }
 
   private def runHLint(project: Project, hlintPath: String, arguments: Seq[String], ignoreExitCode: Boolean) = {
-    CommandLine.run(project, hlintPath, arguments, logOutput = true, ignoreExitCode = ignoreExitCode)
+    CommandLine.run(project, Path.of(hlintPath), arguments, logOutput = true, ignoreExitCode = ignoreExitCode)
   }
 
   private object HlintJsonProtocol extends DefaultJsonProtocol {

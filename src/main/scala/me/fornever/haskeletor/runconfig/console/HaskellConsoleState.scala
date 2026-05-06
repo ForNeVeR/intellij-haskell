@@ -14,10 +14,11 @@ import com.intellij.execution.filters.TextConsoleBuilderImpl
 import com.intellij.execution.process.{ProcessHandler, ProcessTerminatedListener}
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.ui.ConsoleView
-import me.fornever.haskeletor.GlobalInfo
 import me.fornever.haskeletor.core.project.GhcVersion
+import me.fornever.haskeletor.core.util.FileSystemUtil
 import me.fornever.haskeletor.external.component.HaskellComponentsManager
-import me.fornever.haskeletor.sdk.HaskellSdkType
+import me.fornever.haskeletor.settings.GlobalInfo
+import me.fornever.haskeletor.stack.StackLocator
 import me.fornever.haskeletor.util.HaskellFileUtil
 
 import java.io.File
@@ -34,7 +35,7 @@ class HaskellConsoleState(val configuration: HaskellConsoleConfiguration, val en
   protected def startProcess: ProcessHandler = {
     val project = configuration.getProject
 
-    HaskellSdkType.getStackPath(project) match {
+    Option(StackLocator.getInstance(project).locateStackBlocking()) match {
       case Some(stackPath) =>
         val stackTarget = configuration.getStackTarget
         val ghcVersion = HaskellComponentsManager.getGhcVersion(project)
@@ -45,10 +46,10 @@ class HaskellConsoleState(val configuration: HaskellConsoleConfiguration, val en
         if (!ghciScript.exists()) {
           HaskellFileUtil.copyStreamToFile(getClass.getResourceAsStream(s"/ghci/$ghciScriptName"), ghciScript)
           ghciScript.setWritable(true, true)
-          HaskellFileUtil.removeGroupWritePermission(ghciScript)
+          FileSystemUtil.removeGroupWritePermission(ghciScript)
         }
 
-        val commandLine = new GeneralCommandLine(stackPath)
+        val commandLine = new GeneralCommandLine(stackPath.toString)
           .withParameters(configuration.replCommand, "--ghci-options", s"-ghci-script ${ghciScript.getAbsolutePath}")
           .withWorkDirectory(project.getBasePath)
           .withEnvironment(GlobalInfo.pathVariables)

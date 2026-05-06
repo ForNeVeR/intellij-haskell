@@ -10,13 +10,13 @@ package me.fornever.haskeletor.stack
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.coroutineToIndicator
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.guessProjectDir
+import com.intellij.openapi.util.NlsContexts
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.platform.ide.progress.withBackgroundProgress
-import com.intellij.platform.util.progress.reportRawProgress
-import com.intellij.platform.util.progress.withProgressText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.fornever.haskeletor.core.HaskeletorBundle
@@ -33,21 +33,20 @@ class StackBuilder(private val project: Project, private val coroutineScope: Cor
     }
 
     fun launchBuildWorkflow(
-        stackExecutable: Path,
         libraryTargets: () -> List<String>,
         ghcOptions: () -> List<String>,
         finishingAction: (ProgressIndicator) -> Unit
     ) {
         coroutineScope.launch {
+            val stackExecutable = StackLocator.getInstance(project).locateStack() ?: return@launch
             withBackgroundProgress(project, HaskeletorBundle.message("workflow.build-project-with-dependencies.title")) {
-                val stack = StackProcessRunner.getInstance(project)
                 val ghcOptions = ghcOptions().asSequence()
 
-                val dependencyBuildStatus = stack.buildDependenciesInBuildView(stackExecutable, ghcOptions)
+                val dependencyBuildStatus = buildDependenciesInBuildView(stackExecutable, ghcOptions)
 
                 if (dependencyBuildStatus) {
                     val projectLibTargets = libraryTargets()
-                    stack.build(
+                    build(
                         HaskeletorBundle.message("build.project-libraries.title"),
                         stackExecutable,
                         projectLibTargets.asSequence(),
@@ -62,30 +61,55 @@ class StackBuilder(private val project: Project, private val coroutineScope: Cor
         }
     }
 
-    private suspend fun StackProcessRunner.build(
+    fun buildTargetBlocking(
+        title: @NlsContexts.ModalProgressTitle String,
+        targetName: String,
+        buildArguments: List<String>,
+        finishingAction: (Boolean) -> Unit
+    ): Boolean =
+        runWithModalProgressBlocking(project, title) {
+            val success = StackCommand(
+                StackLocator.getInstance(project).locateStack() ?: run {
+                    logger.warn("Cannot locate Stack executable, build impossible.")
+                    return@runWithModalProgressBlocking false
+                },
+                StackCommand.defaultWorkingDir(project),
+                listOf("build", "--fast", "--progress-bar", "none", "--no-interleaved-output")
+                    + targetName
+                    + buildArguments
+            ).executeInBuildView(project, title)
+
+            finishingAction(success)
+
+            success
+        }
+
+    private suspend fun build(
         title: @Nls(capitalization = Nls.Capitalization.Title) String,
         stackExecutable: Path,
         buildArguments: Sequence<String>,
         ghcOptions: Sequence<String>
     ) =
-        executeInBuildView(
-            title,
+        StackCommand(
             stackExecutable,
-            project.guessProjectDir()?.toNioPath() ?: error("Cannot determine the project directory."),
-            sequenceOf("build", "--fast", "--progress-bar", "full", "--no-interleaved-output")
+            StackCommand.defaultWorkingDir(project),
+            listOf("build", "--fast", "--progress-bar", "full", "--no-interleaved-output")
                 + buildArguments
                 + ghcOptions
+        ).executeInBuildView(
+            project,
+            title
         )
 
-    private suspend fun StackProcessRunner.buildDependenciesInBuildView(
+    private suspend fun buildDependenciesInBuildView(
         stackExecutable: Path,
         ghcOptions: Sequence<String>
-    ) =
-        build(
-            HaskeletorBundle.message("build.project-dependencies.title"),
-            stackExecutable,
-            sequenceOf("--test", "--bench", "--no-run-tests", "--no-run-benchmarks", "--only-dependencies"),
-            ghcOptions
-        )
-
+    ) = build(
+        HaskeletorBundle.message("build.project-dependencies.title"),
+        stackExecutable,
+        sequenceOf("--test", "--bench", "--no-run-tests", "--no-run-benchmarks", "--only-dependencies"),
+        ghcOptions
+    )
 }
+
+private val logger = logger<StackBuilder>()
